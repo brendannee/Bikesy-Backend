@@ -8,6 +8,7 @@ import graphserver
 from graphserver.util import TimeHelpers
 from graphserver.ext.osm.osmdb import OSMDB
 from graphserver.ext.osm.profiledb import ProfileDB
+from xml.dom.minidom import Document
 try:
   import json
 except ImportError:
@@ -40,7 +41,7 @@ class RouteServer(Servable):
         return "\n".join( [vv.label for vv in self.graph.vertices] )
     vertices.mime = "text/plain"
 
-    def path(self, lat1, lng1, lat2, lng2, transfer_penalty=0, walking_speed=1.0, hill_reluctance=20, narrative=True, jsoncallback=None):
+    def path(self, lat1, lng1, lat2, lng2, transfer_penalty=0, walking_speed=1.0, hill_reluctance=1, narrative=True, jsoncallback=None):
         
         t0 = time.time()
         origin = "osm-%s"%self.osmdb.nearest_node( lat1, lng1 )[0]
@@ -53,7 +54,7 @@ class RouteServer(Servable):
         wo = WalkOptions()
         #wo.transfer_penalty=transfer_penalty
         #wo.walking_speed=walking_speed
-        wo.walking_speed=4
+        wo.walking_speed=5
         wo.walking_overage = 0
         wo.hill_reluctance = 20
         wo.turn_penalty = 15 
@@ -94,10 +95,58 @@ class RouteServer(Servable):
                              'endpoint_find_time':endpoint_find_time,},
                            { 'total_dist':total_dist,
                              'total_elev':total_elev}) )
+
+	ret2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Ri>\n"
+	for name in names:
+		ret2 = "%s<d>"% (ret2)
+		for indy in name:
+			if str(indy) != "0":
+				if (type(indy) == tuple):
+					onlon = True;
+					#for latlon in indy:
+					#	if(onlon==True):
+					#		ret2 = "%s<o>%s</o>\n"% (ret2, latlon)
+					#	else:
+					#		ret2 = "%s<l>%s</l>\n"% (ret2, latlon)
+					#	onlon = False;
+				else:
+					ret2 = "%s%s"% (ret2, indy)
+					
+		ret2 = "%s</d>\n"% (ret2)
+
+	ret2 = "%s<r>\n"% (ret2)
+	for lon, lat in geoms:
+		ret2 = "%s<l>%s</l>\n"%(ret2,lat)
+		ret2 = "%s<o>%s</o>\n"%(ret2,lon)
+	ret2 = "%s</r>\n</Ri>"%(ret2)
+
+	doc = Document()
+
+	# Create the <wml> base element
+	wml = doc.createElement("wml")
+	doc.appendChild(wml)
+
+	# Create the main <card> element
+	maincard = doc.createElement("card")
+	maincard.setAttribute("id", "main")
+	wml.appendChild(maincard)
+
+	# Create a <p> element
+	paragraph1 = doc.createElement("p")
+	maincard.appendChild(paragraph1)
+
+	# Give the <p> elemenet some text
+	ptext = doc.createTextNode("This is a test!")
+	paragraph1.appendChild(ptext)
+
+	# Print our newly created XML
+	print doc.toprettyxml(indent="  ")
+
         if jsoncallback:
             return "%s(%s)"%(jsoncallback,ret)
         else:
-            return ret
+            return ret2
+            #return doc.toxml("UTF-8")
 
     """
     def path_raw(self, origin, dest, currtime):
@@ -125,15 +174,16 @@ class RouteServer(Servable):
 import sys
 if __name__ == '__main__':
     
-    usage = "python routeserver.py ch_basename osmdb_filename profiledb_filename"
+    usage = "python routeserver.py ch_basename osmdb_filename profiledb_filename thePort"
     
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 4:
         print usage
         exit()
         
     graphdb_filename = sys.argv[1]
     osmdb_filename = sys.argv[2]
     profiledb_filename = sys.argv[3]
+    thePort = sys.argv[4]
     
     gc = RouteServer(graphdb_filename, osmdb_filename, profiledb_filename)
-    gc.run_test_server(settings.PORT)
+    gc.run_test_server(int(thePort))
