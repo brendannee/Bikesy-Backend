@@ -186,7 +186,7 @@ def profile_rise_fall(profile):
             fall -= diff
     return (rise,fall)
 
-def load_streets_to_graph(g, osmdb, profiledb=None, slogs={}, reporter=None ):
+def load_streets_to_graph(g, osmdb, profiledb=None, slogs={}, cycleslogs={}, bicycleslogs={}, routeslogs={}, reporter=None ):
     
     n_edges = osmdb.count_edges()
     
@@ -230,17 +230,39 @@ def load_streets_to_graph(g, osmdb, profiledb=None, slogs={}, reporter=None ):
         s2 = Street( id, distance, fall, rise, reverse_of_source=True )
         s1.way = street_id
         s2.way = street_id
-        
+         
+        # First check to see if any of the key values have 'slog' values associated with them
         # See if the way's highway tag is penalized with a 'slog' value; if so, set it in the edges
-        slog = slogs.get( tags.get("highway") )
+        slog = cycleslogs.get( tags.get("cycleway") )
         if slog:
             s1.slog = s2.slog = slog
-        
+	else:
+            slog = slogs.get( tags.get("bicycle") )
+            if slog:
+                   s1.slog = s2.slog = slog
+	    else: 
+                slog = slogs.get( tags.get("route") )
+                if slog:
+                       s1.slog = s2.slog = slog
+	        else:
+                    slog = slogs.get( tags.get("highway") )
+                    if slog:
+                           s1.slog = s2.slog = slog
+
+        oneway = tags.get("oneway")
+        if oneway == "true" or oneway == "yes":
+	   highwaytype = tags.get("highway")
+           if highwaytype == "residential":
+	       s2.slog = max(1.5,s2.slog)
+	   else:
+	       s2.slog = max(3,s2.slog)
+	   print "%s %s" % (highwaytype ,s2.slog)
+ 
         # Add the forward edge and the return edge if the edge is not oneway
         g.add_edge( vertex1_label, vertex2_label, s1 )
         oneway = tags.get("oneway")
-        if oneway != "true" and oneway != "yes":
-            g.add_edge( vertex2_label, vertex1_label, s2 )
+        #if oneway != "true" and oneway != "yes":
+        g.add_edge( vertex2_label, vertex1_label, s2 )
         
 def load_transit_street_links_to_graph( g, osmdb, gtfsdb, reporter=None ):
     n = gtfsdb.count_stops()
