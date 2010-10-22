@@ -1,0 +1,5 @@
+slog_function: bikesy.slogger
+
+slogs:
+  motorway: 10.5
+  

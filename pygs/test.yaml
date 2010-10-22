@@ -1,0 +1,26 @@
+server_class: bikesy.BikesyServer
+walk_options_config:
+    hill_reluctance: 99
+
+edge_handlers:
+    - name: graphserver.ext.routeserver.events.AllEdgeEvent
+
+vertex_handlers:
+#    - name: graphserver.ext.routeserver.events.AllVertexEvent
+    - name: graphserver.ext.routeserver.events.StreetTurnEvent
+      args:
+        osmdb_filename: test.osmdb
+        timezone_name: America/Los_Angeles
+    - name: graphserver.ext.routeserver.events.StreetStartEvent
+      args:
+        osmdb_filename: test.osmdb
+        timezone_name: America/Los_Angeles
+    - name: graphserver.ext.routeserver.events.StreetEndEvent
+      args:
+        osmdb_filename: test.osmdb
+        timezone_name: America/Los_Angeles
+
+vertex_reverse_geocoders:
+  - name: graphserver.ext.routeserver.geocoders.OSMReverseGeocoder
+    args:
+      osmdb_filename: test.osmdb
