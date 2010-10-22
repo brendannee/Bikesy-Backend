@@ -5,7 +5,7 @@ from graphserver.core import State, WalkOptions
 import time
 import sys
 import graphserver
-from graphserver.util import TimeHelpers
+from graphserver.util import TimeHelpers, import_object
 from graphserver.ext.gtfs.gtfsdb import GTFSDatabase
 try:
     import json
@@ -235,24 +235,7 @@ class RouteServer(Servable):
         spt.destroy()
         
         return ret
-        
-def import_class(handler_class_path_string):
-    sys.path.append( os.getcwd() )
-    
-    handler_class_path = handler_class_path_string.split(".")
-    
-    class_name = handler_class_path[-1]
-    package_name = ".".join(handler_class_path[:-1])
-    
-    package = __import__(package_name, fromlist=[class_name])
-    
-    try:
-        handler_class = getattr( package, class_name )
-    except AttributeError:
-        raise AttributeError( "Can't find %s. Only %s"%(class_name, dir(package)) )
-    
-    return handler_class
-    
+            
 def get_handler_instances( handler_definitions, handler_type ):
     if handler_definitions is None:
         return
@@ -261,7 +244,7 @@ def get_handler_instances( handler_definitions, handler_type ):
         return
     
     for handler in handler_definitions[handler_type]:
-        handler_class = import_class( handler['name'] )
+        handler_class = import_object( handler['name'] )
         handler_instance = handler_class(**handler.get("args", {}))
         
         yield handler_instance
@@ -291,7 +274,7 @@ def main():
 
     server_class = RouteServer
     if 'server_class' in handler_definitions:
-        server_class = import_class(handler_definitions['server_class'])
+        server_class = import_object(handler_definitions['server_class'])
     
     edge_events = list(get_handler_instances( handler_definitions, 'edge_handlers' ) )
     vertex_events = list(get_handler_instances( handler_definitions, 'vertex_handlers' ) )

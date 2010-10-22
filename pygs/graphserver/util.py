@@ -2,6 +2,7 @@ import pytz
 from datetime import datetime
 import time
 import sys
+import os
 
 import calendar
 
@@ -62,3 +63,20 @@ def withProgress(seq, modValue=100):
         yield v
 
     print("\nCompleted %s" % (c+1))
+
+def import_object(object_path_string):
+    sys.path.append( os.getcwd() )
+    
+    object_path = object_path_string.split(".")
+    
+    object_name = object_path[-1]
+    package_name = ".".join(object_path[:-1])
+    
+    package = __import__(package_name, fromlist=[object_name])
+    
+    try:
+        object = getattr( package, object_name )
+    except AttributeError:
+        raise AttributeError( "Can't find %s. Only %s"%(object_name, dir(package)) )
+    
+    return object
