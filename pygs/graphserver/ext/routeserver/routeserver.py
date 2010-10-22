@@ -61,7 +61,7 @@ def postprocess_path(vertices, edges, vertex_events, edge_events):
                     yield handler.__class__.__name__, event
 
 class RouteServer(Servable):
-    def __init__(self, graphdb_filename, vertex_events, edge_events, vertex_reverse_geocoders):
+    def __init__(self, graphdb_filename, vertex_events, edge_events, vertex_reverse_geocoders, config={}):
         graphdb = GraphDatabase( graphdb_filename )
         self.graph = graphdb.incarnate()
         self.vertex_events = vertex_events
@@ -288,6 +288,10 @@ def main():
     
     # get narrative handler classes
     handler_definitions = yaml.load( open(config_filename).read() )
+
+    server_class = RouteServer
+    if 'server_class' in handler_definitions:
+        server_class = import_class(handler_definitions['server_class'])
     
     edge_events = list(get_handler_instances( handler_definitions, 'edge_handlers' ) )
     vertex_events = list(get_handler_instances( handler_definitions, 'vertex_handlers' ) )
@@ -305,7 +309,8 @@ def main():
         print "   %s"%vertex_reverse_geocoder
     
     # start up the routeserver
-    gc = RouteServer(graphdb_filename, vertex_events, edge_events, vertex_reverse_geocoders)
+    gc = server_class(graphdb_filename, vertex_events, edge_events, vertex_reverse_geocoders, 
+                      config=handler_definitions)
     
     # serve as either an HTTP server or an fastCGI backend
     if options.socket:
