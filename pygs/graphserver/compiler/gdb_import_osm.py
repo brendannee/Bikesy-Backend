@@ -3,11 +3,13 @@ from graphserver.graphdb import GraphDatabase
 import os
 from graphserver.core import Street
 from graphserver.ext.osm.osmdb import OSMDB
+from graphserver.util import import_object
 import sys
+import yaml
 from graphserver.ext.osm.profiledb import ProfileDB
 from gdb_import_ned import get_rise_and_fall
 
-def edges_from_osmdb(osmdb, vertex_namespace, slogs, profiledb=None):
+def edges_from_osmdb(osmdb, vertex_namespace, slog_config, profiledb=None):
     """generates (vertex1_label, vertex2_label, edgepayload) from osmdb"""
     
     street_id_counter = 0
@@ -46,9 +48,12 @@ def edges_from_osmdb(osmdb, vertex_namespace, slogs, profiledb=None):
         s2.way = street_id
         
         # See if the way's highway tag is penalized with a 'slog' value; if so, set it in the edges
-        slog = slogs.get( tags.get("highway") )
-        if slog:
-            s1.slog = s2.slog = slog
+        if slog_config.get('slog_function'):
+            slog = slog_config.get('slog_function')( slog_config, tags )
+        else:
+            slog = slog_config['slogs'].get( tags.get("highway") )
+            if slog:
+                s1.slog = s2.slog = slog
         
         # Add the forward edge and the return edge if the edge is not oneway
 	yield vertex1_label, vertex2_label, s1
@@ -57,13 +62,13 @@ def edges_from_osmdb(osmdb, vertex_namespace, slogs, profiledb=None):
         if oneway != "true" and oneway != "yes":
 	    yield vertex2_label, vertex1_label, s2
 
-def gdb_import_osm(gdb, osmdb, vertex_namespace, slogs, profiledb=None):
+def gdb_import_osm(gdb, osmdb, vertex_namespace, slog_config, profiledb=None):
     cursor = gdb.get_cursor()
 	
     n_edges = osmdb.count_edges()
     
     # for each edge in the osmdb
-    for i, (vertex1_label, vertex2_label, edge ) in enumerate( edges_from_osmdb( osmdb, vertex_namespace, slogs, profiledb ) ):
+    for i, (vertex1_label, vertex2_label, edge ) in enumerate( edges_from_osmdb( osmdb, vertex_namespace, slog_config, profiledb ) ):
         
         if i%(n_edges//100+1)==0: sys.stdout.write( "%d/%d edges loaded\r\n"%(i, n_edges))
             
@@ -87,7 +92,10 @@ def main():
                       help="specify slog for highway type, in highway_type:slog form. For example, 'motorway:10.5'")
     parser.add_option("-p", "--profiledb", dest="profiledb_filename", default=None,
                       help="specify profiledb to annotate streets with rise/fall data")
-    
+    parser.add_option("-c", "--slog_config",
+                      dest="slog_config", default=None, metavar="CONFIG.yaml",
+                      help="file containing slog parameters for highways, cycleways, etc")
+
     (options, args) = parser.parse_args()
     
     if len(args) != 2:
@@ -95,10 +103,20 @@ def main():
         exit(-1)
         
     slogs = {}
+    slog_config = {}
+    if options.slog_config:
+        slog_config = yaml.load( open(options.slog_config).read() )
+        for highway_type, slog_penalty in slog_config.get('slogs',{}).items():
+            slogs[highway_type] = float(slog_penalty)
+
     for slog_string in options.slog_strings:
         highway_type,slog_penalty = slog_string.split(":")
         slogs[highway_type] = float(slog_penalty)
     print "slog values: %s"%slogs
+
+    slog_config['slogs'] = slogs
+    if slog_config.get('slog_function'):
+        slog_config['slog_function'] = import_object(slog_config['slog_function'])
         
     graphdb_filename = args[0]
     osmdb_filename = args[1]
@@ -109,7 +127,7 @@ def main():
     osmdb = OSMDB( osmdb_filename )
     gdb = GraphDatabase( graphdb_filename, overwrite=False )
     
-    gdb_import_osm(gdb, osmdb, options.namespace, slogs, profiledb);
+    gdb_import_osm(gdb, osmdb, options.namespace, slog_config, profiledb)
     
     print "done"
 
