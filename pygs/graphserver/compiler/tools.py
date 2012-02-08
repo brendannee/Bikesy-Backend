@@ -186,7 +186,7 @@ def profile_rise_fall(profile):
             fall -= diff
     return (rise,fall)
 
-def load_streets_to_graph(g, osmdb, profiledb=None, slogs={}, cycleslogs={}, bicycleslogs={}, routeslogs={}, reporter=None ):
+def load_streets_to_graph(g, osmdb, profiledb=None, slogs={}, cycleslogs={}, bicycleslogs={}, routeslogs={}, accessslogs={}, reporter=None ):
     
     n_edges = osmdb.count_edges()
     
@@ -233,30 +233,43 @@ def load_streets_to_graph(g, osmdb, profiledb=None, slogs={}, cycleslogs={}, bic
          
         # First check to see if any of the key values have 'slog' values associated with them
         # See if the way's highway tag is penalized with a 'slog' value; if so, set it in the edges
-        slog = cycleslogs.get( tags.get("cycleway") )
+        slog = accessslogs.get( tags.get("access") )
         if slog:
             s1.slog = s2.slog = slog
-	else:
-            slog = slogs.get( tags.get("bicycle") )
+        else:
+            slog = cycleslogs.get( tags.get("cycleway") )
             if slog:
-                   s1.slog = s2.slog = slog
-	    else: 
-                slog = slogs.get( tags.get("route") )
+                s1.slog = s2.slog = slog
+            else:
+                slog = slogs.get( tags.get("bicycle") )
                 if slog:
-                       s1.slog = s2.slog = slog
-	        else:
-                    slog = slogs.get( tags.get("highway") )
+                    s1.slog = s2.slog = slog
+                else: 
+                    slog = slogs.get( tags.get("route") )
                     if slog:
-                           s1.slog = s2.slog = slog
+                        s1.slog = s2.slog = slog
+                    else:
+                        slog = slogs.get( tags.get("highway") )
+                        if slog:
+                            s1.slog = s2.slog = slog
 
         oneway = tags.get("oneway")
         if oneway == "true" or oneway == "yes":
-	   highwaytype = tags.get("highway")
-           if highwaytype == "residential":
-	       s2.slog = max(1.5,s2.slog)
-	   else:
-	       s2.slog = max(3,s2.slog)
-	   print "%s %s" % (highwaytype ,s2.slog)
+            highwaytype = tags.get("highway")
+            if highwaytype == "residential":
+                s2.slog = max(1.5,s2.slog)
+            else:
+                s2.slog = max(3,s2.slog)
+            print "%s %s" % (highwaytype ,s2.slog)
+        else:
+            if oneway == '-1':
+                highwaytype = tags.get("highway")
+                if highwaytype == "residential":
+                    s1.slog = max(1.5,s1.slog)
+                else:
+                    s1.slog = max(3,s1.slog)
+                print "%s %s" % (highwaytype ,s1.slog)
+                
  
         # Add the forward edge and the return edge if the edge is not oneway
         g.add_edge( vertex1_label, vertex2_label, s1 )

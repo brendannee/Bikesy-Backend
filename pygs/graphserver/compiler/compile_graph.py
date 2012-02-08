@@ -7,7 +7,7 @@ from graphserver.core import Graph
 import sys
 from sys import argv
     
-def process_street_graph(osmdb_filename, graphdb_filename, profiledb_filename, slogs={}, cycleslogs={}, bicycleslogs={}, routeslogs={}):
+def process_street_graph(osmdb_filename, graphdb_filename, profiledb_filename, slogs={}, cycleslogs={}, bicycleslogs={}, routeslogs={}, accessslogs={}):
     OSMDB_FILENAME = "ext/osm/bartarea.sqlite"
     GRAPHDB_FILENAME = "bartstreets.db"
     
@@ -22,12 +22,12 @@ def process_street_graph(osmdb_filename, graphdb_filename, profiledb_filename, s
         profiledb = None
     
     g = Graph()
-    compiler.load_streets_to_graph( g, osmdb, profiledb, slogs, cycleslogs, bicycleslogs, routeslogs, reporter=sys.stdout )
+    compiler.load_streets_to_graph( g, osmdb, profiledb, slogs, cycleslogs, bicycleslogs, routeslogs, accessslogs, reporter=sys.stdout )
     
     graphdb = GraphDatabase( graphdb_filename, overwrite=True )
     graphdb.populate( g, reporter=sys.stdout )
     
-def process_transit_graph(graphdb_filename, gtfsdb_filenames, osmdb_filename=None, profiledb_filename=None, agency_id=None, link_stations=False, slogs={}, cycleslogs={}, bicycleslogs={}, routeslogs={}):
+def process_transit_graph(graphdb_filename, gtfsdb_filenames, osmdb_filename=None, profiledb_filename=None, agency_id=None, link_stations=False, slogs={}, cycleslogs={}, bicycleslogs={}, routeslogs={}, accessslogs={}):
     g = Graph()
 
     if profiledb_filename:
@@ -41,7 +41,7 @@ def process_transit_graph(graphdb_filename, gtfsdb_filenames, osmdb_filename=Non
         # Load osmdb ===============================
         print( "Opening OSM-DB '%s'"%osmdb_filename )
         osmdb = OSMDB( osmdb_filename )
-        compiler.load_streets_to_graph( g, osmdb, profiledb, slogs, cycleslogs, bicycleslogs, routeslogs, reporter=sys.stdout )
+        compiler.load_streets_to_graph( g, osmdb, profiledb, slogs, cycleslogs, bicycleslogs, routeslogs, accessslogs, reporter=sys.stdout )
     
     # Load gtfsdb ==============================
    
@@ -88,6 +88,9 @@ def main():
     parser.add_option("-r", "--routeslog",
                       action="append", dest="route_strings", default=[],
                       help="specify route for route, in route_type:slog form. For example, 'bicycle:0.75'")
+    parser.add_option("-a", "--accessslog",
+                      action="append", dest="access_strings", default=[],
+                      help="specify access for access, in acess:slog form. For example, 'access:1000'")
 
     (options, args) = parser.parse_args()
     
@@ -115,6 +118,13 @@ def main():
         routeslogs[route_type] = float(route_penalty)
     print routeslogs 
     
+    accessslogs = {}
+    for access_string in options.access_strings:
+        access_type,access_penalty = access_string.split(":")
+        accessslogs[access_type] = float(access_penalty)
+    print accessslogs 
+    
+    
     if len(args) != 1 or not options.osmdb_filename and not len(options.gtfsdb_files):
         #print len(args)
         parser.print_help()
@@ -124,14 +134,14 @@ def main():
 
     # just street graph compilation
     if options.osmdb_filename and not len(options.gtfsdb_files):
-        process_street_graph(options.osmdb_filename, graphdb_filename, options.profiledb_filename, slogs, cycleslogs, bicycleslogs, routeslogs)
+        process_street_graph(options.osmdb_filename, graphdb_filename, options.profiledb_filename, slogs, cycleslogs, bicycleslogs, routeslogs, accessslogs)
         exit(0)
     
     
     process_transit_graph(graphdb_filename, options.gtfsdb_files,
                           osmdb_filename=options.osmdb_filename,
                           profiledb_filename=options.profiledb_filename,
-                          link_stations=options.link and not options.osmdb_filename, slogs=slogs, cycleslogs=cycleslogs, bicycleslogs=bicycleslogs, routeslogs=routeslogs)
+                          link_stations=options.link and not options.osmdb_filename, slogs=slogs, cycleslogs=cycleslogs, bicycleslogs=bicycleslogs, routeslogs=routeslogs, accessslogs=accessslogs)
     exit(0)
         
 if __name__=='__main__': main()
