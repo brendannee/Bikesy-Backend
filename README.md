@@ -4,16 +4,14 @@ This is how to setup this version of graphserver to work with OSM data to create
 
 You can see a live implementation and more documentation here: http://bikesy.com
 
-
 ## EC2 setup
 If you want to use Amazon EC2 to host graphserver, here are the steps
 * Create an EC2 instance "amzn-ami-pv-2016.03.1.x86_64-ebs (ami-8ff710e2)"
 * Create a 50 gig volume in the same zone as your instance
 * Mount the volume to a directory
-    mkfs -t ext2 /dev/sdf
+    sudo mkfs -t ext4 /dev/xvdf
     sudo mkdir /mnt/SF
-    sudo mount /dev/sdf /mnt/SF
-
+    sudo mount /dev/xvdf /mnt/SF
 
 ## Setup prereqs
     sudo yum install git
@@ -21,13 +19,8 @@ If you want to use Amazon EC2 to host graphserver, here are the steps
     sudo yum install gcc-c++
     sudo yum install python-setuptools
 
-    <!--
-    $ yum install gcc-c++
-    $ yum install python-devel
-    $ easy_install simplejson -->
-
 ## Get graphserver
-    git git clone https://github.com/brendannee/Bikesy-Backend
+    git clone https://github.com/brendannee/Bikesy-Backend
     cd Bikesy-Backend
 
 ## Install graphserver with python wrappers
@@ -44,14 +37,11 @@ If you want to use Amazon EC2 to host graphserver, here are the steps
     cd spatialindex-src-1.8.5
     ./configure --prefix=/usr
     make
-    make install
+    sudo make install
     sudo /sbin/ldconfig
 
 ## Install rtree
-    pip install RTree
-<!--
-## Install the latest version of servable
-    pip install servable -->
+    sudo pip install RTree
 
 ## Get osmosis
     cd ~/downloads
@@ -78,35 +68,39 @@ The Mission:
 San Francisco:
     37.9604,-122.5772 : 37.6746,-122.1151
 
+Lake Tahoe:
+    39.368232, -120.345042 : 38.750276, -119.659482
+
 Use Osmosis to cut it out.  Be sure to use the `completeWays=yes` option for `bounding-box`
 
     ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-123.029 bottom=37.3064 right=-121.6370 top=38.3170 completeWays=yes --write-xml bayarea.osm
 
-## Get DEM data from the USGS
-    mkdir elevation
-
-a) Download highest quality DEM available from seamless.usgs.gov, in GridFloat format
-   - click "Seamless Viewer"
-   - click the bottom on the left that corresponds with "Define Download Area By Coordinates"
-   - when a popup window comes up, click "Switch To Decimal Degrees"
-   - key in your bounding box
-   - a new popup will come up. Click "Modify Data Request"
-   - Unselect everything except 1/3 arc-second NED, in GridFloat format
-   - It will give you several downloads, corresponding to different sections of the requested area. Download them all.
-
-b) Unzip the gridfloats into their own folder
-
 ## Make osmdb
     cd /mnt/SF
     gs_osmdb_compile bayarea.osm bayarea.osmdb
+
+## Get DEM data from the USGS
+    mkdir elevation
+
+a) Download highest quality DEM available from http://nationalmap.gov/3DEP/index.html, in GridFloat format
+   - click "Download Data"
+   - select "Coordinates" and enter in your bounding box and click "Draw AOI"
+   - Unselect everything except 1/3 arc-second DEM, in GridFloat format
+   - It will give you several downloads, corresponding to different sections of the requested area. Download them all.
+
+b) Unzip the gridfloats into their own folder
 
 ## Compile profiledb
 Pass in each of the .flt files you downloaded above that cover every part of the area that you'd like route on.
 
     python ~/Bikesy-Backend/misc/tripplanner/profile.py bayarea.osmdb bayarea.profiledb 10 elevation/04507044/04507044.flt elevation/06932766/06932766.flt elevation/26582513/26582513.flt elevation/55614802/55614802.flt elevation/59476301/59476301.flt elevation/77723440/77723440.flt elevation/82362642/82362642.flt elevation/94430404/94430404.flt
 
+    python ~/Bikesy-Backend/misc/tripplanner/profile.py tahoe.osmdb tahoe.profiledb 10 elevation/n39w120/floatn39w120_13.flt elevation/n39w121/floatn39w121_13.flt elevation/n40w120/floatn40w120_13.flt elevation/n40w121/floatn40w121_13.flt
+
 
 ## Fold profiledb and osmdb into a compiled graph
+You have to pass in each of the flt files you downloaded above that cover every part of the area that you'd like route on.
+
 Specify the weights you'd like to apply to each link type
     gs_compile_gdb -o bayarea.osmdb -p bayarea.profiledb -s "motorway:100" -s "motorway_link:100" -s "trunk:1.2" -s "trunk_link:1.2" -s "primary:1.1" -s "primary_link:1.1" -s "secondary:1" -s "secondary_link:1" -s "residential:1" -s "living_street:1" -s "steps:3" -s "track:1.1" -s "pedestrian:1.1" -s "path:1.1" -s "cycleway:0.9" -c "lane:0.9" -c "track:0.9" -c "path:0.9" -b "designated:0.9" -b "yes:0.9" -r "bicycle:0.9" -a "private:100" -a "no:100" bayarea.gdb
 
@@ -115,9 +109,6 @@ Specify the weights you'd like to apply to each link type
   -b - specifies an OSM bicycle key http://wiki.openstreetmap.org/wiki/Key:bicycle
   -r - specifies an OSM route key http://wiki.openstreetmap.org/wiki/Key:route
   -a - specifies an OSM access key http://wiki.openstreetmap.org/wiki/Key:access
-
-## Compile profiledb
-you have to pass in each of the flt files you downloaded above that cover every part of the area that you'd like route on.
 
 # Creating an Individual Route Server
 
@@ -143,7 +134,7 @@ view-source:http://ec2-184-73-96-123.compute-1.amazonaws.com:8081/bounds
 
 ## Sample API call
 
-http://ec2-184-73-96-123.compute-1.amazonaws.com:8081/path<D-c>?lng1=-122.42&lat1=37.75&lng2=-122.41&lat2=37.77
+http://ec2-184-73-96-123.compute-1.amazonaws.com:8081/path?lng1=-122.42&lat1=37.75&lng2=-122.41&lat2=37.77
 
 
 # Restarting Server
