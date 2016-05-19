@@ -17,6 +17,7 @@ If you want to use Amazon EC2 to host graphserver, here are the steps
 
 ##Setup prereqs
 You might already have these
+
     $ yum install git-core
     $ yum install python-setuptools-devel
     $ yum install gcc
@@ -109,6 +110,10 @@ a) Download highest quality DEM available from seamless.usgs.gov, in GridFloat f
 
 b) Unzip the gridfloats into their own folder
 
+##get california
+    $ cd /mnt/SF
+    $ wget http://downloads.cloudmade.com/americas/northern_america/united_states/california/california.highway.osm.bz2
+    $ bunzip2 california.highway.osm.bz2
 
 ##Import into Mongodb
     $ cd ~/downloads
@@ -137,6 +142,8 @@ Specify the weights you'd like to apply to each link type
   -r - specifies an OSM route key http://wiki.openstreetmap.org/wiki/Key:route
   -a - specifies an OSM access key http://wiki.openstreetmap.org/wiki/Key:access
 
+##compile profiledb
+you have to pass in each of the flt files you downloaded above that cover every part of the area that you'd like route on.
 
 #CREATING AN INDIVIDUAL ROUTESERVER
 
@@ -156,11 +163,9 @@ if its for production, you could run
 
     $ nohup sudo python ~/graphserver/misc/tripplanner/routeserver.py /mnt/SF/bayarea /mnt/SF/bayarea.osmdb /mnt/SF/bayarea.profiledb 8081
 
-
 ##Make sure your port 80 is open, then:
 view-source:http://ec2-184-73-96-123.compute-1.amazonaws.com:8081
 view-source:http://ec2-184-73-96-123.compute-1.amazonaws.com:8081/bounds
-
 
 ##Sample API call
 
@@ -172,7 +177,6 @@ http://ec2-184-73-96-123.compute-1.amazonaws.com:8081/path<D-c>?lng1=-122.42&lat
     mount /dev/sdf /mnt/SF
 
 ## Run the routeserver
-
     cd /mnt/SF/bayarea
 
     # run all 9 servers
