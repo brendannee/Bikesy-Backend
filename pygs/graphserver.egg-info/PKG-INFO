@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: graphserver
+Version: 0.1
+Summary: Graphserver routing engine.
+Home-page: http://github.com/bmander/graphserver/tree/master
+Author: Brandon Martin-Anderson
+Author-email: badhill@gmail.com
+License: BSD
+Description: UNKNOWN
+Keywords: OSM OpenStreetMap GTFS routing transit
+Platform: UNKNOWN

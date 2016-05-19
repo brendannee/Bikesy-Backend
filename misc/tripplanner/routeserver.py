@@ -103,14 +103,9 @@ class RouteServer(Servable):
 			if str(indy) != "0":
 				if (type(indy) == tuple):
 					onlon = True;
-					#for latlon in indy:
-					#	if(onlon==True):
-					#		ret2 = "%s<o>%s</o>\n"% (ret2, latlon)
-					#	else:
-					#		ret2 = "%s<l>%s</l>\n"% (ret2, latlon)
-					#	onlon = False;
 				else:
-					ret2 = "%s%s"% (ret2, indy)
+					indy = indy.capitalize()
+					ret2 = "%s %s"% (ret2, indy)
 					
 		ret2 = "%s</d>\n"% (ret2)
 
@@ -118,29 +113,47 @@ class RouteServer(Servable):
 	for lon, lat in geoms:
 		ret2 = "%s<l>%s</l>\n"%(ret2,lat)
 		ret2 = "%s<o>%s</o>\n"%(ret2,lon)
-	ret2 = "%s</r>\n</Ri>"%(ret2)
+
+        #new stuff to find elevation
+	profiley = profile
+	latestpoint, latestelev = profiley.segs[0][0]
+	lastleg = profiley.segs[len(profiley.segs)-1]
+
+	lastpoint, lastelev = lastleg[len(lastleg)-1]
+	elevchange = lastelev - latestelev;
+	elevgain = 0;
+	distance = 0;
+	for seg in profiley.segs:
+		for datapoint in range(len(seg)):
+			point, elev = seg[datapoint]
+			#ret2 = "%s<point0>%s<elev0>%s\n"%(ret2,point,elev)
+			if(elev > latestelev):
+				elevgain = elevgain + (elev - latestelev)
+			latestelev = elev
+		distance = distance + seg[len(seg)-1][0]
+	ret2 = "%s</r>\n<cl>%s</cl>\n<ec>%s</ec>\n<di>%s</di>\n</Ri>"%(ret2,elevgain,elevchange,distance)
 
 	doc = Document()
 
 	# Create the <wml> base element
-	wml = doc.createElement("wml")
-	doc.appendChild(wml)
+	#wml = doc.createElement("wml")
+	#doc.appendChild(wml)
 
 	# Create the main <card> element
-	maincard = doc.createElement("card")
-	maincard.setAttribute("id", "main")
-	wml.appendChild(maincard)
+	#maincard = doc.createElement("card")
+	#maincard.setAttribute("id", "main")
+	#wml.appendChild(maincard)
 
 	# Create a <p> element
-	paragraph1 = doc.createElement("p")
-	maincard.appendChild(paragraph1)
+	#paragraph1 = doc.createElement("p")
+	#maincard.appendChild(paragraph1)
 
 	# Give the <p> elemenet some text
-	ptext = doc.createTextNode("This is a test!")
-	paragraph1.appendChild(ptext)
+	#ptext = doc.createTextNode("This is a test!")
+	#paragraph1.appendChild(ptext)
 
 	# Print our newly created XML
-	print doc.toprettyxml(indent="  ")
+	#print doc.toprettyxml(indent="  ")
 
         if jsoncallback:
             return "%s(%s)"%(jsoncallback,ret)
