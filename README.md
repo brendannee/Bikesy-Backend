@@ -120,13 +120,40 @@ for each set of contraction hierarchy graphs, edit the WalkOptions numbers in ch
 ## Create the shortcut cache
     $ python ~/Bikesy-Backend/misc/tripplanner/shortcut_cache.py ./bayarea
 
+## Install and configure Nginx
+
+    easy_install uwsgi
+
+    sudo yum install nginx
+
+    vi /etc/nginx/nginx.conf
+
+Find the location / section, and change it to as follow:
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass 127.0.0.1:10080;
+    }
+
+Start nginx
+
+    service nginx start
+    chkconfig nginx on
+
 
 ## Run the routesever
-    $ sudo python ~/Bikesy-Backend/misc/tripplanner/routeserver.py /mnt/SF/bayarea/bayarea /mnt/SF/bayarea/bayarea.osmdb /mnt/SF/bayarea/bayarea.profiledb 8081
+
+    sudo uwsgi --yaml ~/Bikesy-Backend/misc/tripplanner/routeserver.yaml
+
+## Stop the routeserver
+
+    sudo kill -INT `cat /tmp/uwsgi.pid`
+
+    sudo python ~/Bikesy-Backend/misc/tripplanner/routeserver.py /mnt/SF/bayarea/bayarea /mnt/SF/bayarea/bayarea.osmdb /mnt/SF/bayarea/bayarea.profiledb 8081
 
 if its for production, you could run
 
-    $ nohup sudo python ~/Bikesy-Backend/misc/tripplanner/routeserver.py /mnt/SF/bayarea /mnt/SF/bayarea.osmdb /mnt/SF/bayarea.profiledb 8081
+    nohup sudo python ~/Bikesy-Backend/misc/tripplanner/routeserver.py /mnt/SF/bayarea /mnt/SF/bayarea.osmdb /mnt/SF/bayarea.profiledb 8081
 
 ## Make sure your port 80 is open, then:
 view-source:http://ec2-184-73-96-123.compute-1.amazonaws.com:8081

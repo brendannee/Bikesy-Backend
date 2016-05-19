@@ -339,7 +339,7 @@ class OSMDB:
         c = self.conn.cursor()
 
         if self.index:
-            print "YOUR'RE USING THE INDEX"
+            print "YOU'RE USING THE INDEX"
             id = next(self.index.nearest( (lon, lat), 1 ))
             print "THE ID IS %d"%id
             c.execute( "SELECT id, lat, lon FROM nodes WHERE id = ?", (id,) )

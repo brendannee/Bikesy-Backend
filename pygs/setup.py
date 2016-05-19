@@ -10,14 +10,14 @@ subprocess.call(["cp",LIBSO,"graphserver/"])
 setup(  name='graphserver',
         version='0.1',
         packages = find_packages(exclude=['examples.*','examples','test','test.*']),
-        install_requires=['pytz>=2008b','pyproj>=1.8.5','servable>=2009b','nose>=0.10.4'], 
+        install_requires=['pytz>=2008b','pyproj>=1.8.5','servable>=2009b','nose>=0.10.4','flask>=0.10.1'], 
         zip_safe=False,
         extras_require = {
         #    'transitfeed':  ["transitfeed>=1.1.6"],
         },
-        
+
         test_suite='nose.collector',
-        
+
         # metadata for upload to PyPI
         author = "Brandon Martin-Anderson",
         author_email = "badhill@gmail.com",
@@ -25,10 +25,10 @@ setup(  name='graphserver',
         license = "BSD",
         keywords = "OSM OpenStreetMap GTFS routing transit",
         url = "http://github.com/bmander/graphserver/tree/master",
-        
+
         # put libgraphserver.so next to gsdll.py
         package_data = {'graphserver':['libgraphserver.so']} ,
-        
+
         entry_points = {
             'console_scripts': [
                 'gs_compile_gdb = graphserver.compiler.compile_graph:main',
@@ -40,5 +40,5 @@ setup(  name='graphserver',
             ],
             #'setuptools.installation': ['eggsecutable = umigis.server.setup:main']
         }
-        
+
 )
