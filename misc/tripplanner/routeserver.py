@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask.ext.cors import CORS
 from graphserver.graphdb import GraphDatabase
 from graphserver.core import State, WalkOptions, ContractionHierarchy
 import time
@@ -18,6 +19,7 @@ from shortcut_cache import get_ep_geom, get_encoded_ep_geom, ShortcutCache, get_
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
+CORS(app)
 
 def reincarnate_ch(basename):
     chdowndb = GraphDatabase(basename + ".down.gdb")
