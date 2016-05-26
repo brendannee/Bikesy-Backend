@@ -73,7 +73,7 @@ Lake Tahoe:
 
 Use Osmosis to cut it out.  Be sure to use the `completeWays=yes` option for `bounding-box`
 
-    ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-123.029 bottom=37.3064 right=-121.6370 top=38.3170 completeWays=yes --write-xml bayarea.osm
+    ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-123.029 bottom=37.3064 right=-121.6370 top=38.3170 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
 
 ## Make osmdb
     cd /mnt/SF
@@ -143,26 +143,21 @@ Start nginx
 
 ## Run the routesever
 
-    sudo uwsgi --yaml ~/Bikesy-Backend/misc/tripplanner/routeserver.yaml
+    cd ~/Bikesy-Backend/misc/tripplanner
+    uwsgi --yaml ./routeserver.yaml
 
 ## Stop the routeserver
 
     sudo kill -INT `cat /tmp/uwsgi.pid`
 
-    sudo python ~/Bikesy-Backend/misc/tripplanner/routeserver.py /mnt/SF/bayarea/bayarea /mnt/SF/bayarea/bayarea.osmdb /mnt/SF/bayarea/bayarea.profiledb 8081
+## Logs
 
-if its for production, you could run
-
-    nohup sudo python ~/Bikesy-Backend/misc/tripplanner/routeserver.py /mnt/SF/bayarea /mnt/SF/bayarea.osmdb /mnt/SF/bayarea.profiledb 8081
-
-## Make sure your port 80 is open, then:
-view-source:http://ec2-184-73-96-123.compute-1.amazonaws.com:8081
-view-source:http://ec2-184-73-96-123.compute-1.amazonaws.com:8081/bounds
+    /var/log/nginx/error.log
+    /var/log/wsgi.log
 
 ## Sample API call
 
-http://ec2-184-73-96-123.compute-1.amazonaws.com:8081/path?lng1=-122.42&lat1=37.75&lng2=-122.41&lat2=37.77
-
+http://ec2-52-39-88-148.us-west-2.compute.amazonaws.com/?lat1=39.10875135935859&lng1=-119.89242553710938&lat2=39.02345139405932&lng2=-119.9212646484375
 
 # Restarting Server
 ## Remount EBS
@@ -178,4 +173,10 @@ http://ec2-184-73-96-123.compute-1.amazonaws.com:8081/path?lng1=-122.42&lat1=37.
     nohup sudo python /root/Bikesy-Backend/misc/tripplanner/routeserver.py ./bayarea ./bayarea.osmdb ./bayarea.profiledb 8081
 
 # Credits
-Brendan Martin Anderson https://github.com/bmander wrote most of these instuctions, I updated them to do what I needed.
+Brendan Martin Anderson https://github.com/bmander wrote graphserver, the underlying system that handles the bike routing.
+
+
+http://ec2-52-39-88-148.us-west-2.compute.amazonaws.com/?lat1=39.23757161784571&lng1=-120.10665893554688&lat2=39.25990481501755&lng2=-120.02151489257812
+http://ec2-52-39-88-148.us-west-2.compute.amazonaws.com/?lat1=39.23757161784571
+
+http://s3-us-west-1.amazonaws.com/tahoe-bike/index.html#
