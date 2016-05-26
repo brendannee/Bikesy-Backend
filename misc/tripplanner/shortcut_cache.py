@@ -171,7 +171,7 @@ def get_full_route_narrative( osmdb, edgepayloads ):
     ret = []
 
     if not streets:
-        return ret 0
+        return ret, 0
 
     #get start of narrative
     rec1 = osmdb.edge( streets[0].name )
