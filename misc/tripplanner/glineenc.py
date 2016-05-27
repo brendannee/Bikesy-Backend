@@ -7,7 +7,7 @@ zoom_factor = 32
 zoom_level_breaks = []
 for i in range(num_levels):
     zoom_level_breaks.append(threshold * (zoom_factor ** (num_levels - i - 1)))
-    
+
 
 def encode_pairs(points):
     """Encode a set of lat/long points.
@@ -31,21 +31,22 @@ def encode_pairs(points):
     """
     encoded_points = []
     encoded_levels = []
-    
-    distances = douglas_peucker_distances(points)
-    points_of_interest = []
-    for i, d in enumerate(distances):
-        if d is not None:
-            lat, long = points[i]
-            points_of_interest.append((lat, long, d))
-    
-    lat_prev, long_prev = 0, 0
-    for lat, long, d in points_of_interest:
-        encoded_lat, lat_prev = encode_lat_or_long(lat, lat_prev)
-        encoded_long, long_prev = encode_lat_or_long(long, long_prev)
-        encoded_points += [encoded_lat, encoded_long]
-        encoded_level = encode_unsigned(num_levels - compute_level(d) - 1)
-        encoded_levels.append(encoded_level)
+
+    if len(points):
+        distances = douglas_peucker_distances(points)
+        points_of_interest = []
+        for i, d in enumerate(distances):
+            if d is not None:
+                lat, long = points[i]
+                points_of_interest.append((lat, long, d))
+
+        lat_prev, long_prev = 0, 0
+        for lat, long, d in points_of_interest:
+            encoded_lat, lat_prev = encode_lat_or_long(lat, lat_prev)
+            encoded_long, long_prev = encode_lat_or_long(long, long_prev)
+            encoded_points += [encoded_lat, encoded_long]
+            encoded_level = encode_unsigned(num_levels - compute_level(d) - 1)
+            encoded_levels.append(encoded_level)
 
     encoded_points_str = ''.join(encoded_points)
     encoded_levels_str = ''.join([str(l) for l in encoded_levels])
@@ -53,17 +54,17 @@ def encode_pairs(points):
 
 def encode_lat_or_long(x, prev_int):
     """Encode a single latitude or longitude.
-    
+
     ``x``
         The latitude or longitude to encode
-        
+
     ``prev_int``
         The integer value of the previous latitude or longitude
-        
+
     Return the encoded value and its int value, which is used
-        
+
     Example::
-    
+
         >>> x = -179.9832104
         >>> encoded_x, prev = encode_lat_or_long(x, 0)
         >>> encoded_x
@@ -73,7 +74,7 @@ def encode_lat_or_long(x, prev_int):
         >>> x = -120.2
         >>> encode_lat_or_long(x, prev)
         ('al{kJ', -12020000)
-    
+
     """
     int_value = int(x * 1e5)
     delta = int_value - prev_int
@@ -96,7 +97,7 @@ def encode_unsigned(n):
     tmp = [(i + 63) for i in tmp]
     tmp = [chr(i) for i in tmp]
     tmp = ''.join(tmp)
-    return tmp    
+    return tmp
 
 def douglas_peucker_distances(points):
     distances = [None] * len(points)
@@ -131,7 +132,7 @@ def distance(point, A, B):
     else:
         u = (
             (((point[0] - A[0]) * (B[0] - A[0])) +
-             ((point[1] - A[1]) * (B[1] - A[1]))) / 
+             ((point[1] - A[1]) * (B[1] - A[1]))) /
             (((B[0] - A[0]) ** 2) +  ((B[1] - A[1]) ** 2))
         )
         if u <= 0:
@@ -150,7 +151,7 @@ def distance(point, A, B):
     return out
 
 def compute_level(distance):
-    """Compute the appropriate zoom level of a point in terms of its 
+    """Compute the appropriate zoom level of a point in terms of its
     distance from the relevant segment in the DP algorithm."""
     if distance > threshold:
         level = 0
@@ -161,7 +162,7 @@ def compute_level(distance):
 def test_encode_negative():
     f = -179.9832104
     assert encode_lat_or_long(f, 0)[0] == '`~oia@'
-    
+
     f = -120.2
     assert encode_lat_or_long(f, 0)[0] == '~ps|U'
 
@@ -183,11 +184,11 @@ def test_encode_pairs():
     )
     expected_encoding = '_p~iF~ps|U_ulLnnqC_mqNvxq`@~lqNwxq`@', 'BBBB'
     assert encode_pairs(pairs) == expected_encoding
-    
+
     pairs = (
         (37.4419, -122.1419),
         (37.4519, -122.1519),
         (37.4619, -122.1819),
     )
     expected_encoding = 'yzocFzynhVq}@n}@o}@nzD', 'B@B'
-    assert encode_pairs(pairs) == expected_encoding    
+    assert encode_pairs(pairs) == expected_encoding
