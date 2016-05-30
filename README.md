@@ -11,13 +11,10 @@ If you want to use Amazon EC2 to host graphserver, here are the steps
 * Mount the volume to a directory
     sudo mkfs -t ext4 /dev/xvdf
     sudo mkdir /mnt/SF
-    sudo mount /dev/xvdf /mnt/SF
+      sudo mount /dev/xvdf /mnt/SF
 
 ## Setup prereqs
-    sudo yum install git
-    sudo yum install gcc
-    sudo yum install gcc-c++
-    sudo yum install python-setuptools
+    sudo yum install git gcc gcc-c++ python-setuptools
 
 ## Get graphserver
     git clone https://github.com/brendannee/Bikesy-Backend
@@ -55,7 +52,10 @@ If you want to use Amazon EC2 to host graphserver, here are the steps
     wget https://download.geofabrik.de/north-america/us/california-latest.osm.bz2
     bunzip2 california-latest.osm.bz2
 
-That there California is about 3.9 gigs.
+## Merge OSM data if needed
+If you are supporting more than one state, you'll need to merge it.
+
+~/downloads/bin/osmosis --rx california-latest.osm  --rx nevada-latest.osm --merge --wx california-nevada.osm
 
 ## Cut it down
 Choose your bounding box - here are some examples:
@@ -75,9 +75,13 @@ Use Osmosis to cut it out.  Be sure to use the `completeWays=yes` option for `bo
 
     ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-123.029 bottom=37.3064 right=-121.6370 top=38.3170 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
 
+    ~/downloads/bin/osmosis --read-xml us-pacific-latest.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --write-xml tahoe.osm
+
 ## Make osmdb
     cd /mnt/SF
     gs_osmdb_compile bayarea.osm bayarea.osmdb
+
+    gs_osmdb_compile tahoe.osm tahoe.osmdb
 
 ## Get DEM data from the USGS
     mkdir elevation
@@ -104,6 +108,8 @@ You have to pass in each of the flt files you downloaded above that cover every 
 Specify the weights you'd like to apply to each link type
     gs_compile_gdb -o bayarea.osmdb -p bayarea.profiledb -s "motorway:100" -s "motorway_link:100" -s "trunk:1.2" -s "trunk_link:1.2" -s "primary:1.1" -s "primary_link:1.1" -s "secondary:1" -s "secondary_link:1" -s "residential:1" -s "living_street:1" -s "steps:3" -s "track:1.1" -s "pedestrian:1.1" -s "path:1.1" -s "cycleway:0.9" -c "lane:0.9" -c "track:0.9" -c "path:0.9" -b "designated:0.9" -b "yes:0.9" -r "bicycle:0.9" -a "private:100" -a "no:100" bayarea.gdb
 
+    gs_compile_gdb -o tahoe.osmdb -p tahoe.profiledb -s "motorway:100" -s "motorway_link:100" -s "trunk:1.2" -s "trunk_link:1.2" -s "primary:1.1" -s "primary_link:1.1" -s "secondary:1" -s "secondary_link:1" -s "residential:1" -s "living_street:1" -s "steps:3" -s "track:1.1" -s "pedestrian:1.1" -s "path:1.1" -s "cycleway:0.9" -c "lane:0.9" -c "track:0.9" -c "path:0.9" -b "designated:0.9" -b "yes:0.9" -r "bicycle:0.9" -a "private:100" -a "no:100" tahoe.gdb
+
   -s - specifies an OSM highway key http://wiki.openstreetmap.org/wiki/Key:highway
   -c - specifies an OSM cycleway key http://wiki.openstreetmap.org/wiki/Key:cycleway
   -b - specifies an OSM bicycle key http://wiki.openstreetmap.org/wiki/Key:bicycle
@@ -114,11 +120,15 @@ Specify the weights you'd like to apply to each link type
 
 ## Edit WalkOptions members in ch.py
 for each set of contraction hierarchy graphs, edit the WalkOptions numbers in ch.py to suit your preferences, then:
-    $ python ~/Bikesy-Backend/misc/tripplanner/ch.py ./bayarea
+    python ~/Bikesy-Backend/misc/tripplanner/ch.py ./bayarea
+
+    python ~/Bikesy-Backend/misc/tripplanner/ch.py ./tahoe
 
 
 ## Create the shortcut cache
-    $ python ~/Bikesy-Backend/misc/tripplanner/shortcut_cache.py ./bayarea
+    python ~/Bikesy-Backend/misc/tripplanner/shortcut_cache.py ./bayarea
+
+    python ~/Bikesy-Backend/misc/tripplanner/shortcut_cache.py ./tahoe
 
 ## Install and configure Nginx
 
