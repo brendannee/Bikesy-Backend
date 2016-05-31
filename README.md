@@ -78,7 +78,6 @@ Use Osmosis to cut it out.  Be sure to use the `completeWays=yes` option for `bo
     ~/downloads/bin/osmosis --read-xml us-pacific-latest.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --write-xml tahoe.osm
 
 ## Make osmdb
-    cd /mnt/SF
     gs_osmdb_compile bayarea.osm bayarea.osmdb
 
     gs_osmdb_compile tahoe.osm tahoe.osmdb
@@ -181,6 +180,10 @@ http://ec2-52-39-88-148.us-west-2.compute.amazonaws.com/?lat1=39.10875135935859&
 
     # run one specific server
     nohup sudo python /root/Bikesy-Backend/misc/tripplanner/routeserver.py ./bayarea ./bayarea.osmdb ./bayarea.profiledb 8081
+
+## Run multiple routeservers
+
+    sudo env "PATH=$PATH" python create.py
 
 # Credits
 Brendan Martin Anderson https://github.com/bmander wrote graphserver, the underlying system that handles the bike routing.

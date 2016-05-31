@@ -122,7 +122,13 @@ def routeserver():
 
 @app.route('/bounds')
 def bounds():
-    return json.dumps(osmdb.bounds())
+    bounds = osmdb.bounds()
+    return json.dumps({
+        'left': bounds[0],
+        'bottom': bounds[1],
+        'right': bounds[2],
+        'top': bounds[3]
+    })
 
 if __name__ == '__main__':
     app.run()
