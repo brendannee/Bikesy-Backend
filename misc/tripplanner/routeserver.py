@@ -32,12 +32,13 @@ def reincarnate_ch(basename):
 
 with open('/mnt/tahoe/config.json') as json_data_file:
     settings = json.load(json_data_file)
+    basename = settings['basename']
 
-graphdb = GraphDatabase(settings['ch_basename'])
-osmdb = OSMDB(settings['osmdb_filename'])
-profiledb = ProfileDB(settings['profiledb_filename'])
-ch = reincarnate_ch(settings['ch_basename'])
-shortcut_cache = ShortcutCache(settings['ch_basename'] + ".scc")
+graphdb = GraphDatabase(basename)
+osmdb = OSMDB(basename + ".osmdb")
+profiledb = ProfileDB(basename + ".profiledb")
+ch = reincarnate_ch(basename)
+shortcut_cache = ShortcutCache(basename + ".scc")
 
 
 def handleError(message):
