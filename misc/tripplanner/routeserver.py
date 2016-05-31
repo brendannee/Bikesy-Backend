@@ -1,5 +1,5 @@
 from flask import Flask, request
-from flask.ext.cors import CORS
+from flask_cors import CORS
 from graphserver.graphdb import GraphDatabase
 from graphserver.core import State, WalkOptions, ContractionHierarchy
 import time

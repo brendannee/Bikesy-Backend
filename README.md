@@ -146,8 +146,8 @@ Find the location / section, and change it to as follow:
 
 Start nginx
 
-    service nginx start
-    chkconfig nginx on
+    sudo service nginx start
+    sudo chkconfig nginx on
 
 
 ## Run the routesever
