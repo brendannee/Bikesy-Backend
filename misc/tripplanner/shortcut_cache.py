@@ -159,7 +159,7 @@ def get_turn_narrative( osmdb, street1, street2, running_totals ):
 
     turn_type = turn_narrative( p1, p2, p3, p4 )
 
-    ret = (turn_type, name2, running_totals[0], running_totals[1], 0, p2)
+    ret = (turn_type, name2, p2)
     #running_totals[0] = 0
     return ret
 
@@ -183,7 +183,7 @@ def get_full_route_narrative( osmdb, edgepayloads ):
     streetname = rec1[6].get( "name", "nameless" )
     dfn = description_from_north( p1, p2 )
 
-    ret.append( ("start "+dfn, streetname, 0, 0, 0, p1) )
+    ret.append( ("start "+dfn, streetname, p1) )
 
     running_totals = [0,0] #distance from last turn, distance from beginning
 

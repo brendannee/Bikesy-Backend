@@ -90,14 +90,14 @@ def routeserver():
     route_find_time = time.time() - t0
 
     t0 = time.time()
-    names = []
+    directions = []
     geoms = []
 
     profile = Profile()
     total_dist = 0
     total_elev = 0
 
-    names, total_dist = get_full_route_narrative( osmdb, edgepayloads )
+    directions, total_dist = get_full_route_narrative( osmdb, edgepayloads )
 
     for edgepayload in edgepayloads:
         geom, profile_seg = shortcut_cache.get(edgepayload.external_id)
@@ -110,7 +110,7 @@ def routeserver():
 
     route_desc_time = time.time() - t0
 
-    return json.dumps({'names': names,
+    return json.dumps({'directions': directions,
                        'path': encode_pairs([(lat, lon) for lon, lat in geoms]),
                        'elevation_profile': profile.concat(300),
                        'total_distance': total_dist,
