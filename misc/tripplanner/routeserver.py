@@ -94,8 +94,6 @@ def routeserver():
     geoms = []
 
     profile = Profile()
-    total_dist = 0
-    total_elev = 0
 
     directions, total_dist = get_full_route_narrative( osmdb, edgepayloads )
 
@@ -114,7 +112,6 @@ def routeserver():
                        'path': encode_pairs([(lat, lon) for lon, lat in geoms]),
                        'elevation_profile': profile.concat(300),
                        'total_distance': total_dist,
-                       'total_elevation': total_elev,
                        'stats': {
                            'route_find_time': route_find_time,
                            'route_desc_time': route_desc_time,

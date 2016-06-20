@@ -135,15 +135,15 @@ def get_ep_geom( osmdb, edgepayload ):
     return reduce( lambda x,y:x+y, geoms )
 
 def get_turn_narrative( osmdb, street1, street2, running_totals ):
-    #street1length = edgerec1[4]
-    #running_totals[0] = running_totals[0]+street1length
-    #running_totals[1] = running_totals[1]+street1length
-
     if street1.way == street2.way:
         return None
 
     edgerec2 = osmdb.edge( street2.name )
     edgerec1 = osmdb.edge( street1.name )
+
+    street1length = edgerec1[4]
+    running_totals[0] = running_totals[0]+street1length
+    running_totals[1] = running_totals[1]+street1length
 
     #name1 = edgerec1[6].get( "name", "nameless" )
     name2 = edgerec2[6].get( "name", "nameless" )
@@ -160,7 +160,7 @@ def get_turn_narrative( osmdb, street1, street2, running_totals ):
     turn_type = turn_narrative( p1, p2, p3, p4 )
 
     ret = (turn_type, name2, p2)
-    #running_totals[0] = 0
+    running_totals[0] = 0
     return ret
 
 def get_full_route_narrative( osmdb, edgepayloads ):
