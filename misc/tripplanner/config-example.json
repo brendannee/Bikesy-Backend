@@ -2,7 +2,11 @@
   "scenarios": [
     {
       "id": "1",
-      "basename": "/mnt/tahoe/tahoe"
-    }
+      "basename": "/mnt/tahoe/scenarios/1/tahoe"
+    },
+    {
+      "id": "2",
+      "basename": "/mnt/tahoe/scenarios/2/tahoe"
+    },
   ]
 }

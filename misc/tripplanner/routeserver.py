@@ -35,9 +35,7 @@ with open('config.json') as json_data_file:
 
 scenarios = settings['scenarios']
 
-# graphdb = {}
 osmdb = {}
-# profiledb = {}
 ch = {}
 shortcut_cache = {}
 
@@ -45,9 +43,7 @@ for scenario in scenarios:
     id = scenario['id']
     basename = scenario['basename']
 
-    # graphdb[id] = GraphDatabase(basename)
     osmdb[id] = OSMDB(basename + ".osmdb")
-    # profiledb[id] = ProfileDB(basename + ".profiledb")
     ch[id] = reincarnate_ch(basename)
     shortcut_cache[id] = ShortcutCache(basename + ".scc")
 
@@ -118,9 +114,6 @@ def routeserver():
 
     for edgepayload in edgepayloads:
         geom, profile_seg = shortcut_cache[scenario].get(edgepayload.external_id)
-
-        #geom = get_ep_geom( osmdb[scenario], edgepayload )
-        #profile_seg = get_ep_profile( profiledb[scenario], edgepayload )
 
         geoms.extend(geom)
         profile.add(profile_seg)
