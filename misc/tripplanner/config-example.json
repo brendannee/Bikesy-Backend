@@ -1,6 +1,8 @@
 {
   "scenarios": [
-    "id": "1",
-    "basename": "/mnt/tahoe/tahoe"
+    {
+      "id": "1",
+      "basename": "/mnt/tahoe/tahoe"
+    }
   ]
 }
