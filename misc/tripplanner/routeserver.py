@@ -40,6 +40,8 @@ ch = {}
 shortcut_cache = {}
 
 for scenario in scenarios:
+    print 'Loading Scenario ' + scenario['id']
+    
     id = scenario['id']
     basename = scenario['basename']
 
