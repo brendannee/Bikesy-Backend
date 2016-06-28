@@ -30,15 +30,26 @@ def reincarnate_ch(basename):
 
     return ContractionHierarchy(upgg, downgg)
 
-with open('/mnt/tahoe/config.json') as json_data_file:
+with open('config.json') as json_data_file:
     settings = json.load(json_data_file)
-    basename = settings['basename']
 
-graphdb = GraphDatabase(basename)
-osmdb = OSMDB(basename + ".osmdb")
-profiledb = ProfileDB(basename + ".profiledb")
-ch = reincarnate_ch(basename)
-shortcut_cache = ShortcutCache(basename + ".scc")
+scenarios = settings['scenarios']
+
+# graphdb = {}
+osmdb = {}
+# profiledb = {}
+ch = {}
+shortcut_cache = {}
+
+for scenario in scenarios:
+    id = scenario['id']
+    basename = scenario['basename']
+
+    # graphdb[id] = GraphDatabase(basename)
+    osmdb[id] = OSMDB(basename + ".osmdb")
+    # profiledb[id] = ProfileDB(basename + ".profiledb")
+    ch[id] = reincarnate_ch(basename)
+    shortcut_cache[id] = ShortcutCache(basename + ".scc")
 
 
 def handleError(message):
@@ -51,6 +62,7 @@ def routeserver():
     lat2 = request.args.get('lat2')
     lng1 = request.args.get('lng1')
     lng2 = request.args.get('lng2')
+    scenario = request.args.get('scenario')
 
     if not lat1:
         return handleError('No `lat1` specified')
@@ -60,6 +72,8 @@ def routeserver():
         return handleError('No `lng1` specified')
     if not lng2:
         return handleError('No `lng2` specified')
+    if not scenario:
+        scenario = '1'
 
     lat1 = float(lat1)
     lat2 = float(lat2)
@@ -67,8 +81,8 @@ def routeserver():
     lng2 = float(lng2)
 
     t0 = time.time()
-    origin_nearest_node = osmdb.nearest_node(lat1, lng1)
-    dest_nearest_node = osmdb.nearest_node(lat2, lng2)
+    origin_nearest_node = osmdb[scenario].nearest_node(lat1, lng1)
+    dest_nearest_node = osmdb[scenario].nearest_node(lat2, lng2)
 
     origin = "osm-%s" % origin_nearest_node[0]
     dest = "osm-%s" % dest_nearest_node[0]
@@ -83,7 +97,7 @@ def routeserver():
     wo.hill_reluctance = 20
     wo.turn_penalty = 15
 
-    edgepayloads = ch.shortest_path(origin, dest, State(1, 0), wo)
+    edgepayloads = ch[scenario].shortest_path(origin, dest, State(1, 0), wo)
 
     wo.destroy()
 
@@ -95,13 +109,13 @@ def routeserver():
 
     profile = Profile()
 
-    directions, total_dist = get_full_route_narrative( osmdb, edgepayloads )
+    directions, total_dist = get_full_route_narrative( osmdb[scenario], edgepayloads )
 
     for edgepayload in edgepayloads:
-        geom, profile_seg = shortcut_cache.get(edgepayload.external_id)
+        geom, profile_seg = shortcut_cache[scenario].get(edgepayload.external_id)
 
-        #geom = get_ep_geom( osmdb, edgepayload )
-        #profile_seg = get_ep_profile( profiledb, edgepayload )
+        #geom = get_ep_geom( osmdb[scenario], edgepayload )
+        #profile_seg = get_ep_profile( profiledb[scenario], edgepayload )
 
         geoms.extend(geom)
         profile.add(profile_seg)

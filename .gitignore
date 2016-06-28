@@ -3,3 +3,5 @@
 *.o
 *.so
 pygs/build/*
+
+misc/tripplanner/config.json
