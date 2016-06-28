@@ -80,6 +80,11 @@ def routeserver():
     lng1 = float(lng1)
     lng2 = float(lng2)
 
+    try:
+        osmdb[scenario]
+    except KeyError:
+        return handleError('Invalid `scenario` ' + scenario)
+
     t0 = time.time()
     origin_nearest_node = osmdb[scenario].nearest_node(lat1, lng1)
     dest_nearest_node = osmdb[scenario].nearest_node(lat2, lng2)
