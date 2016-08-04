@@ -1,4 +1,4 @@
-# Overview
+# Bikesy Server
 
 This is how to setup this version of graphserver to work with OSM data to create a bike routing server.  The instructions below create a server running 9 instances of graphserver to do bike routing on a variety of hill and safety scenarios for the San Francisco Bay Area. Modify as needed.
 
@@ -7,18 +7,18 @@ You can see a live implementation and more documentation here: http://bikesy.com
 ## EC2 setup
 If you want to use Amazon EC2 to host graphserver, here are the steps
 * Create an EC2 instance "amzn-ami-pv-2016.03.1.x86_64-ebs (ami-8ff710e2)"
-* Create a 50 gig volume in the same zone as your instance
+* Create a 60 gig volume in the same zone as your instance
 * Mount the volume to a directory
     sudo mkfs -t ext4 /dev/xvdf
-    sudo mkdir /mnt/SF
-      sudo mount /dev/xvdf /mnt/SF
+    sudo mkdir /mnt/bayarea
+    sudo mount /dev/xvdf /mnt/bayarea
 
 ## Setup prereqs
     sudo yum install git gcc gcc-c++ python-setuptools
 
 ## Get graphserver
-    git clone https://github.com/brendannee/Bikesy-Backend
-    cd Bikesy-Backend
+    git clone https://github.com/brendannee/bikesy-server
+    cd bikesy-server
 
 ## Install graphserver with python wrappers
     cd pygs
@@ -73,9 +73,14 @@ Lake Tahoe:
 
 Use Osmosis to cut it out.  Be sure to use the `completeWays=yes` option for `bounding-box`
 
+    Bay Area:
     ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-123.029 bottom=37.3064 right=-121.6370 top=38.3170 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
 
-    ~/downloads/bin/osmosis --read-xml california-nevada.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --write-xml tahoe.osm
+    The Mission:
+    ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.428 bottom=37.733 right=-122.4 top=37.772 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
+
+    Lake Tahoe:
+    ~/downloads/bin/osmosis --read-xml california-nevada.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt --write-xml tahoe.osm
 
 ## Make osmdb
     gs_osmdb_compile bayarea.osm bayarea.osmdb
@@ -96,9 +101,9 @@ b) Unzip the gridfloats into their own folder
 ## Compile profiledb
 Pass in each of the .flt files you downloaded above that cover every part of the area that you'd like route on.
 
-    python ~/Bikesy-Backend/misc/tripplanner/profile.py bayarea.osmdb bayarea.profiledb 10 elevation/04507044/04507044.flt elevation/06932766/06932766.flt elevation/26582513/26582513.flt elevation/55614802/55614802.flt elevation/59476301/59476301.flt elevation/77723440/77723440.flt elevation/82362642/82362642.flt elevation/94430404/94430404.flt
+    python ~/bikesy-server/misc/tripplanner/profile.py bayarea.osmdb bayarea.profiledb 10 elevation/04507044/04507044.flt elevation/06932766/06932766.flt elevation/26582513/26582513.flt elevation/55614802/55614802.flt elevation/59476301/59476301.flt elevation/77723440/77723440.flt elevation/82362642/82362642.flt elevation/94430404/94430404.flt
 
-    python ~/Bikesy-Backend/misc/tripplanner/profile.py tahoe.osmdb tahoe.profiledb 10 elevation/n39w120/floatn39w120_13.flt elevation/n39w121/floatn39w121_13.flt elevation/n40w120/floatn40w120_13.flt elevation/n40w121/floatn40w121_13.flt
+    python ~/bikesy-server/misc/tripplanner/profile.py tahoe.osmdb tahoe.profiledb 10 elevation/n39w120/floatn39w120_13.flt elevation/n39w121/floatn39w121_13.flt elevation/n40w120/floatn40w120_13.flt  elevation/n40w121/floatn40w121_13.flt
 
 
 ## Fold profiledb and osmdb into a compiled graph
@@ -108,10 +113,10 @@ Specify the weights you'd like to apply to each link type
     gs_compile_gdb -o bayarea.osmdb -p bayarea.profiledb -s "motorway:100" -s "motorway_link:100" -s "trunk:1.2" -s "trunk_link:1.2" -s "primary:1.1" -s "primary_link:1.1" -s "secondary:1" -s "secondary_link:1" -s "residential:1" -s "living_street:1" -s "steps:3" -s "track:1.1" -s "pedestrian:1.1" -s "path:1.1" -s "cycleway:0.9" -c "lane:0.9" -c "track:0.9" -c "path:0.9" -b "designated:0.9" -b "yes:0.9" -r "bicycle:0.9" -a "private:100" -a "no:100" bayarea.gdb
 
 Tahoe Low
-    gs_compile_gdb -o tahoe.osmdb -p tahoe.profiledb -s "motorway:100" -s "motorway_link:100" -s "trunk:1.2" -s "trunk_link:1.2" -s "primary:1.1" -s "primary_link:1.1" -s "secondary:1" -s "secondary_link:1" -s "residential:1" -s "living_street:1" -s "steps:3" -s "track:1.1" -s "pedestrian:1.1" -s "path:1.1" -s "cycleway:0.9" -c "lane:0.9" -c "track:0.9" -c "path:0.9" -b "designated:0.9" -b "yes:0.9" -r "bicycle:0.9" -a "private:100" -a "no:100" tahoe.gdb
+      gs_compile_gdb -o tahoe.osmdb -p tahoe.profiledb -s "motorway:100" -s "motorway_link:100" -s "trunk:1.2" -s "trunk_link:1.2" -s "primary:1.1" -s "primary_link:1.1" -s "secondary:1" -s "secondary_link:1" -s "residential:1" -s "living_street:1" -s "steps:3" -s "track:1.1" -s "pedestrian:1.1" -s "path:0.8" -s "cycleway:0.8" -c "lane:0.9" -c "track:0.9" -c "path:0.8" -b "designated:0.9" -b "yes:0.9" -r "bicycle:0.9" -a "private:100" -a "no:100" tahoe.gdb
 
 Tahoe High
-    gs_compile_gdb -o tahoe.osmdb -p tahoe.profiledb -s "motorway:100" -s "motorway_link:100" -s "trunk:1.5" -s "trunk_link:1.5" -s "primary:1.4" -s "primary_link:1.4" -s "secondary:1.2" -s "secondary_link:1.2" -s "residential:.9" -s "living_street:.9" -s "steps:2" -s "track:1" -s "pedestrian:1.1" -s "path:1" -s "cycleway:0.7" -c "lane:0.7" -c "track:0.7" -c "path:0.7" -b "designated:0.7" -b "yes:0.7" -r "bicycle:0.7" -a "private:100" -a "no:100" tahoe.gdb
+    gs_compile_gdb -o tahoe.osmdb -p tahoe.profiledb -s "motorway:100" -s "motorway_link:100" -s "trunk:1.5" -s "trunk_link:1.5" -s "primary:1.4" -s "primary_link:1.4" -s "secondary:1.2" -s "secondary_link:1.2" -s "residential:.9" -s "living_street:.9" -s "steps:2" -s "track:.9" -s "pedestrian:1" -s "path:0.5" -s "cycleway:0.5" -c "lane:0.6" -c "track:0.6" -c "path:0.5" -b "designated:0.6" -b "yes:0.6" -r "bicycle:0.6" -a "private:100" -a "no:100" tahoe.gdb
 
   -s - specifies an OSM highway key http://wiki.openstreetmap.org/wiki/Key:highway
   -c - specifies an OSM cycleway key http://wiki.openstreetmap.org/wiki/Key:cycleway
@@ -123,19 +128,19 @@ Tahoe High
 
 ## Edit WalkOptions members in ch.py
 for each set of contraction hierarchy graphs, edit the WalkOptions numbers in ch.py to suit your preferences, then:
-    python ~/Bikesy-Backend/misc/tripplanner/ch.py ./bayarea
+    python ~/bikesy-server/misc/tripplanner/ch.py ./bayarea
 
-    python ~/Bikesy-Backend/misc/tripplanner/ch.py ./tahoe
+    python ~/bikesy-server/misc/tripplanner/ch.py ./tahoe
 
 
 ## Create the shortcut cache
-    python ~/Bikesy-Backend/misc/tripplanner/shortcut_cache.py ./bayarea
+    python ~/bikesy-server/misc/tripplanner/shortcut_cache.py ./bayarea
 
-    python ~/Bikesy-Backend/misc/tripplanner/shortcut_cache.py ./tahoe
+    python ~/bikesy-server/misc/tripplanner/shortcut_cache.py ./tahoe
 
 ## Setup config file
 
-    cd ~/Bikesy-Backend/misc/tripplanner
+    cd ~/bikesy-server/misc/tripplanner
     cp config-example.json config.json
 
 Edit `config.json` as needed.
@@ -163,10 +168,11 @@ Start nginx
 
 ## Run the routesever
 
-    cd ~/Bikesy-Backend/misc/tripplanner
+    cd ~/bikesy-server/misc/tripplanner
     uwsgi --yaml ./routeserver.yaml
 
 ## Stop the routeserver
+
     sudo service nginx stop
     sudo kill -INT `cat /tmp/uwsgi.pid`
 
@@ -181,38 +187,19 @@ or
 
 ## Sample API call
 
-http://ec2-52-39-88-148.us-west-2.compute.amazonaws.com/?lat1=39.10875135935859&lng1=-119.89242553710938&lat2=39.02345139405932&lng2=-119.9212646484375
-
-# Restarting Server
-## Remount EBS
-    mount /dev/sdf /mnt/SF
-
-## Run the routeserver
-    cd /mnt/SF/bayarea
-
-    # run all 9 servers
-    nohup python routeserverONLY.py
-
-    # run one specific server
-    nohup sudo python /root/Bikesy-Backend/misc/tripplanner/routeserver.py ./bayarea ./bayarea.osmdb ./bayarea.profiledb 8081
-
-## Run multiple routeservers
-
-    sudo env "PATH=$PATH" python create.py
+http://ec2-52-39-88-148.us-west-2.compute.amazonaws.com/?lat1=39.147547&lng1=-120.162651&lat2=39.0169036&lng2=-120.1256955&scenario=1
 
 # Creating Bike facility overlays:
 
-~/Development/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=path,cycleway --tf accept-ways bicycle=designated --write-xml class1-1.osm
-~/Development/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=footway --tf accept-ways bicycle=yes --write-xml class1-2.osm
-~/Development/bin/osmosis --read-xml class1-1.osm --rx class1-2.osm --merge --wx class1.osm
+~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=path,cycleway --tf accept-ways bicycle=designated --tf reject-relations --used-node --write-xml class1-1.osm
+~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=footway --tf accept-ways bicycle=yes --tf reject-relations --used-node --write-xml class1-2.osm
+~/downloads/bin/osmosis --read-xml class1-1.osm --rx class1-2.osm --merge --wx class1.osm
 
-~/Development/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=lane --write-xml class2.osm
+~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=lane --tf reject-relations --used-node --write-xml class2.osm
 
-~/Development/bin/osmosis --read-xml tahoe.osm --tf accept-ways lcn=yes --tf reject-ways bicycle=designated --tf reject-ways highway=footway --tf reject-ways cycleway=lane --write-xml class3-1.osm
-~/Development/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=shared_lane --tf reject-ways cycleway=lane --write-xml class3-2.osm
-~/Development/bin/osmosis --read-xml class3-1.osm --rx class3-2.osm --merge --wx class3.osm
+~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways lcn=yes --tf reject-ways bicycle=designated --tf reject-ways highway=footway --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-1.osm
+~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=shared_lane --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-2.osm
+~/downloads/bin/osmosis --read-xml class3-1.osm --rx class3-2.osm --merge --wx class3.osm
 
 # Credits
 Brendan Martin Anderson https://github.com/bmander wrote graphserver, the underlying system that handles the bike routing.
-
-http://ec2-52-39-88-148.us-west-2.compute.amazonaws.com/?lat1=39.147547&lng1=-120.162651&lat2=39.0169036&lng2=-120.1256955&scenario=1

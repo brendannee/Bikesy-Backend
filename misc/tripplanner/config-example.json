@@ -1,12 +1,366 @@
 {
+  "filename": "bayarea",
+  "basename": "/mnt/bayarea",
   "scenarios": [
     {
       "id": "1",
-      "basename": "/mnt/tahoe/scenarios/1/tahoe"
+      "edgetypes": "10",
+      "ch": "50",
+      "osm_weights": {
+        "s": [
+          "motorway:100",
+          "motorway_link:100",
+          "trunk:1.2",
+          "trunk_link:1.2",
+          "primary:1.1",
+          "primary_link:1.1",
+          "secondary:1",
+          "secondary_link:1",
+          "residential:1",
+          "living_street:1",
+          "steps:3",
+          "track:1.1",
+          "pedestrian:1.1",
+          "path:1.1",
+          "cycleway:0.9"
+        ],
+        "c": [
+         "lane:0.9",
+         "track:0.9",
+         "path:0.9"
+        ],
+        "b": [
+          "designated:0.9",
+          "yes:0.9"
+        ],
+        "r": [
+          "bicycle:0.9"
+        ],
+        "a": [
+          "private:100",
+          "no:100"
+        ]
+      }
     },
     {
       "id": "2",
-      "basename": "/mnt/tahoe/scenarios/2/tahoe"
+      "edgetypes": "25",
+      "ch": "20",
+      "osm_weights": {
+        "s": [
+          "motorway:100",
+          "motorway_link:100",
+          "trunk:1.2",
+          "trunk_link:1.2",
+          "primary:1.1",
+          "primary_link:1.1",
+          "secondary:1",
+          "secondary_link:1",
+          "residential:1",
+          "living_street:1",
+          "steps:3",
+          "track:1.1",
+          "pedestrian:1.1",
+          "path:1.1",
+          "cycleway:0.9"
+        ],
+        "c": [
+         "lane:0.9",
+         "track:0.9",
+         "path:0.9"
+        ],
+        "b": [
+          "designated:0.9",
+          "yes:0.9"
+        ],
+        "r": [
+          "bicycle:0.9"
+        ],
+        "a": [
+          "private:100",
+          "no:100"
+        ]
+      }
+    },
+    {
+      "id": "3",
+      "edgetypes": "40",
+      "ch": "3",
+      "osm_weights": {
+        "s": [
+          "motorway:100",
+          "motorway_link:100",
+          "trunk:1.2",
+          "trunk_link:1.2",
+          "primary:1.1",
+          "primary_link:1.1",
+          "secondary:1",
+          "secondary_link:1",
+          "residential:1",
+          "living_street:1",
+          "steps:3",
+          "track:1.1",
+          "pedestrian:1.1",
+          "path:1.1",
+          "cycleway:0.9"
+        ],
+        "c": [
+         "lane:0.9",
+         "track:0.9",
+         "path:0.9"
+        ],
+        "b": [
+          "designated:0.9",
+          "yes:0.9"
+        ],
+        "r": [
+          "bicycle:0.9"
+        ],
+        "a": [
+          "private:100",
+          "no:100"
+        ]
+      }
+    },
+    {
+      "id": "4",
+      "edgetypes": "10",
+      "ch": "50",
+      "osm_weights": {
+        "s": [
+          "motorway:100",
+          "motorway_link:100",
+          "trunk:1.35",
+          "trunk_link:1.35",
+          "primary:1.25",
+          "primary_link:1.25",
+          "secondary:1.1",
+          "secondary_link:1.1",
+          "residential:0.95",
+          "living_street:0.95",
+          "steps:3",
+          "track:1.05",
+          "pedestrian:1.1",
+          "path:1.05",
+          "cycleway:0.8"
+        ],
+        "c": [
+          "lane:0.8",
+          "track:0.8",
+          "path:0.8"
+        ],
+        "b": [
+          "designated:0.8",
+          "yes:0.8"
+        ],
+        "r": [
+          "bicycle:0.8"
+        ],
+        "a": [
+          "private:100",
+          "no:100"
+        ]
+      }
+    },
+    {
+      "id": "5",
+      "edgetypes": "25",
+      "ch": "20",
+      "osm_weights": {
+        "s": [
+          "motorway:100",
+          "motorway_link:100",
+          "trunk:1.35",
+          "trunk_link:1.35",
+          "primary:1.25",
+          "primary_link:1.25",
+          "secondary:1.1",
+          "secondary_link:1.1",
+          "residential:0.95",
+          "living_street:0.95",
+          "steps:3",
+          "track:1.05",
+          "pedestrian:1.1",
+          "path:1.05",
+          "cycleway:0.8"
+        ],
+        "c": [
+          "lane:0.8",
+          "track:0.8",
+          "path:0.8"
+        ],
+        "b": [
+          "designated:0.8",
+          "yes:0.8"
+        ],
+        "r": [
+          "bicycle:0.8"
+        ],
+        "a": [
+          "private:100",
+          "no:100"
+        ]
+      }
+    },
+    {
+      "id": "6",
+      "edgetypes": "40",
+      "ch": "3",
+      "osm_weights": {
+        "s": [
+          "motorway:100",
+          "motorway_link:100",
+          "trunk:1.35",
+          "trunk_link:1.35",
+          "primary:1.25",
+          "primary_link:1.25",
+          "secondary:1.1",
+          "secondary_link:1.1",
+          "residential:0.95",
+          "living_street:0.95",
+          "steps:3",
+          "track:1.05",
+          "pedestrian:1.1",
+          "path:1.05",
+          "cycleway:0.8"
+        ],
+        "c": [
+          "lane:0.8",
+          "track:0.8",
+          "path:0.8"
+        ],
+        "b": [
+          "designated:0.8",
+          "yes:0.8"
+        ],
+        "r": [
+          "bicycle:0.8"
+        ],
+        "a": [
+          "private:100",
+          "no:100"
+        ]
+      }
+    },
+    {
+      "id": "7",
+      "edgetypes": "10",
+      "ch": "50",
+      "osm_weights": {
+        "s": [
+          "motorway:100",
+          "motorway_link:100",
+          "trunk:1.5" ,
+          "trunk_link:1.5",
+          "primary:1.4",
+          "primary_link:1.4",
+          "secondary:1.2",
+          "secondary_link:1.2",
+          "residential:0.9",
+          "living_street:0.9",
+          "steps:3",
+          "track:1",
+          "pedestrian:1",
+          "path:1",
+          "cycleway:0.7"
+        ],
+        "c": [
+          "lane:0.7",
+          "track:0.7",
+          "path:0.7"
+        ],
+        "b": [
+          "designated:0.7",
+          "yes:0.7"
+        ],
+        "r": [
+          "bicycle:0.7"
+        ],
+        "a": [
+          "private:100",
+          "no:100"
+        ]
+      }
+    },
+    {
+      "id": "8",
+      "edgetypes": "25",
+      "ch": "20",
+      "osm_weights": {
+        "s": [
+          "motorway:100",
+          "motorway_link:100",
+          "trunk:1.5" ,
+          "trunk_link:1.5",
+          "primary:1.4",
+          "primary_link:1.4",
+          "secondary:1.2",
+          "secondary_link:1.2",
+          "residential:0.9",
+          "living_street:0.9",
+          "steps:3",
+          "track:1",
+          "pedestrian:1",
+          "path:1",
+          "cycleway:0.7"
+        ],
+        "c": [
+          "lane:0.7",
+          "track:0.7",
+          "path:0.7"
+        ],
+        "b": [
+          "designated:0.7",
+          "yes:0.7"
+        ],
+        "r": [
+          "bicycle:0.7"
+        ],
+        "a": [
+          "private:100",
+          "no:100"
+        ]
+      }
+    },
+    {
+      "id": "9",
+      "edgetypes": "40",
+      "ch": "3",
+      "osm_weights": {
+        "s": [
+          "motorway:100",
+          "motorway_link:100",
+          "trunk:1.5" ,
+          "trunk_link:1.5",
+          "primary:1.4",
+          "primary_link:1.4",
+          "secondary:1.2",
+          "secondary_link:1.2",
+          "residential:0.9",
+          "living_street:0.9",
+          "steps:3",
+          "track:1",
+          "pedestrian:1",
+          "path:1",
+          "cycleway:0.7"
+        ],
+        "c": [
+          "lane:0.7",
+          "track:0.7",
+          "path:0.7"
+        ],
+        "b": [
+          "designated:0.7",
+          "yes:0.7"
+        ],
+        "r": [
+          "bicycle:0.7"
+        ],
+        "a": [
+          "private:100",
+          "no:100"
+        ]
+      }
     }
   ]
 }

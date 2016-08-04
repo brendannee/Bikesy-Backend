@@ -41,13 +41,13 @@ shortcut_cache = {}
 
 for scenario in scenarios:
     print 'Loading Scenario ' + scenario['id']
-    
-    id = scenario['id']
-    basename = scenario['basename']
 
-    osmdb[id] = OSMDB(basename + ".osmdb")
-    ch[id] = reincarnate_ch(basename)
-    shortcut_cache[id] = ShortcutCache(basename + ".scc")
+    id = scenario['id']
+    basename = settings['basename'] + '/scenarios/' + id
+
+    osmdb[id] = OSMDB(basename + "/" + settings['filename'] + ".osmdb")
+    ch[id] = reincarnate_ch(basename + "/" + settings['filename'])
+    shortcut_cache[id] = ShortcutCache(basename + "/" + settings['filename'] + ".scc")
 
 
 def handleError(message):
