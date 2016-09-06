@@ -9,9 +9,9 @@ If you want to use Amazon EC2 to host graphserver, here are the steps
 * Create an EC2 instance "amzn-ami-pv-2016.03.1.x86_64-ebs (ami-8ff710e2)"
 * Create a 60 gig volume in the same zone as your instance
 * Mount the volume to a directory
-    sudo mkfs -t ext4 /dev/xvdf
+    sudo mkfs -t ext4 /dev/sdf
     sudo mkdir /mnt/bayarea
-    sudo mount /dev/xvdf /mnt/bayarea
+    sudo mount /dev/sdf /mnt/bayarea
 
 ## Setup prereqs
     sudo yum install git gcc gcc-c++ python-setuptools
@@ -61,6 +61,7 @@ If you are supporting more than one state, you'll need to merge it.
 Choose your bounding box - here are some examples:
 Bay Area:
     38.317,-123.029 : 37.3064,-121.637
+    38.317,-122.8 : 37.3064,-121.637
 
 The Mission:
     37.772,-122.428 : 37.733,-122.4
@@ -74,7 +75,7 @@ Lake Tahoe:
 Use Osmosis to cut it out.  Be sure to use the `completeWays=yes` option for `bounding-box`
 
     Bay Area:
-    ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-123.029 bottom=37.3064 right=-121.6370 top=38.3170 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
+    ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.8 bottom=37.3064 right=-121.637 top=38.0534 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
 
     The Mission:
     ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.428 bottom=37.733 right=-122.4 top=37.772 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
@@ -107,7 +108,6 @@ Pass in each of the .flt files you downloaded above that cover every part of the
 
 
 ## Fold profiledb and osmdb into a compiled graph
-You have to pass in each of the flt files you downloaded above that cover every part of the area that you'd like route on.
 
 Specify the weights you'd like to apply to each link type
     gs_compile_gdb -o bayarea.osmdb -p bayarea.profiledb -s "motorway:100" -s "motorway_link:100" -s "trunk:1.2" -s "trunk_link:1.2" -s "primary:1.1" -s "primary_link:1.1" -s "secondary:1" -s "secondary_link:1" -s "residential:1" -s "living_street:1" -s "steps:3" -s "track:1.1" -s "pedestrian:1.1" -s "path:1.1" -s "cycleway:0.9" -c "lane:0.9" -c "track:0.9" -c "path:0.9" -b "designated:0.9" -b "yes:0.9" -r "bicycle:0.9" -a "private:100" -a "no:100" bayarea.gdb
