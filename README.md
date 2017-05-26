@@ -147,11 +147,11 @@ Edit `config.json` as needed.
 
 ## Install and configure Nginx
 
-    easy_install uwsgi
+    sudo easy_install uwsgi
 
     sudo yum install nginx
 
-    vi /etc/nginx/nginx.conf
+    sudo vi /etc/nginx/nginx.conf
 
 Find the location / section, and change it to as follow:
 
