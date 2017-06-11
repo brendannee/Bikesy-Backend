@@ -15,8 +15,6 @@ scenarios = settings['scenarios']
 os.system('mkdir ' + settings['basename'] + '/scenarios/')
 
 for scenario in scenarios:
-    if scenario['id'] != '1':
-        break
     print 'Building Scenario ' + scenario['id']
     print 'Switching edgetypes and ch.py'
 
