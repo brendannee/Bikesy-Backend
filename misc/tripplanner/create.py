@@ -42,5 +42,4 @@ for scenario in scenarios:
     os.system('python ' + bikesy_base + '/misc/tripplanner/shortcut_cache.py ./' + settings['filename'])
 
     print 'Copy to scenario folder'
-    os.system('mkdir ' + settings['basename'] + '/scenarios/' + scenario['id'])
     os.system('cp bayarea.* ' + settings['basename'] + '/scenarios/' + scenario['id'])
