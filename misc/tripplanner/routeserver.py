@@ -79,7 +79,7 @@ def routeserver():
     lng2 = float(lng2)
 
     try:
-        osmdb[scenario]
+        shortcut_cache[scenario]
     except KeyError:
         return handleError('Invalid `scenario` ' + scenario)
 

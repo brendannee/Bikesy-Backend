@@ -12,7 +12,7 @@ with open(bikesy_base + '/misc/tripplanner/config.json') as json_data_file:
 
 scenarios = settings['scenarios']
 
-os.system('mkdir ' + settings['basename'] + '/scenarios/')
+os.system('mkdir -p ' + settings['basename'] + '/scenarios/')
 
 for scenario in scenarios:
     print 'Building Scenario ' + scenario['id']
@@ -23,7 +23,7 @@ for scenario in scenarios:
 
     os.system('cd ' + bikesy_base + '/pygs; python setup.py install')
 
-    os.system('mkdir ' + settings['basename'] + '/scenarios/' + scenario['id'])
+    os.system('mkdir -p ' + settings['basename'] + '/scenarios/' + scenario['id'])
     os.system('cd ' + settings['basename'] + '/scenarios/' + scenario['id'])
 
     print 'Running gs_compile_gdb with edge weights'

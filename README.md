@@ -116,7 +116,7 @@ Pass in each of the .flt files you downloaded above that cover every part of the
 
 ### Optional: run create.py script to automate the following steps
 
-    python ~/bikesy-server/misc/tripplanner/create.py
+    sudo python ~/bikesy-server/misc/tripplanner/create.py
 
 ### Fold profiledb and osmdb into a compiled graph
 
@@ -160,7 +160,7 @@ Edit `config.json` as needed.
 
 ### Install and configure Nginx
 
-    sudo easy_install uwsgi
+    pip install uwsgi
 
     sudo yum install nginx
 
@@ -183,6 +183,10 @@ Find the location / section, and change it to as follow:
 
     cd ~/bikesy-server/misc/tripplanner
     uwsgi --yaml ./routeserver.yaml
+
+To see what is going on, tail the Logs
+
+    tail /var/log/uwsgi.log -f
 
 ### Sample API call
 
