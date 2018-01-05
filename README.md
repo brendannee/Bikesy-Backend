@@ -16,7 +16,7 @@ If you want to use Amazon EC2 to host graphserver, here are the steps
     sudo mount /dev/sdf /mnt/bayarea
 
 ### Setup prereqs
-    sudo yum install git gcc gcc-c++ python-setuptools
+    sudo yum install git gcc gcc-c++ python-setuptools python-devel python-pip java-1.8.0
 
 ### Get graphserver
     git clone https://github.com/brendannee/bikesy-server
@@ -53,9 +53,9 @@ If you want to use Amazon EC2 to host graphserver, here are the steps
 ### Download OSM data
 Download data for the US states you want
 
-    cd /mnt/SF
-    wget https://download.geofabrik.de/north-america/us/nevada-latest.osm.bz2
-    bunzip2 nevada-latest.osm.bz2
+    cd /mnt/bayarea
+    wget https://download.geofabrik.de/north-america/us/california-latest.osm.bz2
+    bunzip2 california-latest.osm.bz2
 
 ### Merge OSM data if needed
 If you are supporting more than one state, you'll need to merge it.
@@ -67,7 +67,7 @@ Choose your bounding box - for example:
 
 Bay Area:
     38.317,-123.029 : 37.3064,-121.637
-    38.317,-122.8 : 37.3064,-121.637
+    38.064476, -122.769606 : 37.459723, -121.611723
 
 The Mission:
     37.772,-122.428 : 37.733,-122.4
@@ -81,7 +81,7 @@ Lake Tahoe:
 Use Osmosis to cut out just the OSM data within your bounding box. Be sure to use the `completeWays=yes` option for `bounding-box`
 
     Bay Area:
-    ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.8 bottom=37.3064 right=-121.637 top=38.0534 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
+    ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.769606 bottom=37.459723 right=-121.611723 top=38.064476 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
 
     The Mission:
     ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.428 bottom=37.733 right=-122.4 top=37.772 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
@@ -160,7 +160,7 @@ Edit `config.json` as needed.
 
 ### Install and configure Nginx
 
-    pip install uwsgi
+    sudo python -m pip install uwsgi
 
     sudo yum install nginx
 
@@ -190,7 +190,7 @@ To see what is going on, tail the Logs
 
 ### Sample API call
 
-http://ec2-52-39-88-148.us-west-2.compute.amazonaws.com/?lat1=39.147547&lng1=-120.162651&lat2=39.0169036&lng2=-120.1256955&scenario=1
+http://ec2-52-39-88-148.us-west-2.compute.amazonaws.com/?lat1=38&lng1=-121&lat2=37.9&lng2=-121
 
 ## Manage the web server
 
