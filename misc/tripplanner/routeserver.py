@@ -134,7 +134,7 @@ def routeserver():
 
 @app.route('/bounds')
 def bounds():
-    bounds = osmdb.bounds()
+    bounds = osmdb.itervalues().next().bounds()
     return json.dumps({
         'left': bounds[0],
         'bottom': bounds[1],
