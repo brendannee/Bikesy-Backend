@@ -1,7 +1,5 @@
 uwsgi:
   socket: 127.0.0.1:10080
-  master: 1
-  workers: 1
   chmod-socket: 666
   auto-procname: 1
   python-path: .
