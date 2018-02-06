@@ -15,20 +15,21 @@ If you want to use Amazon EC2 to host graphserver, here are the steps
     sudo mkdir /mnt/bayarea
     sudo mount /dev/sdf /mnt/bayarea
 
+### Enable Swap (optional)
+
+    sudo mkswap /dev/xvdg
+    sudo swapon /dev/xvdg
+
 ### Setup prereqs
     sudo yum install git gcc gcc-c++ python-setuptools python-devel python-pip java-1.8.0
 
-### Get graphserver
+### Get graphserver and install with python wrappers
     git clone https://github.com/brendannee/bikesy-server
-    cd bikesy-server
-
-### Install graphserver with python wrappers
-    cd pygs
+    cd bikesy-server/pygs
     sudo python setup.py install
 
 ### Install libspatialindex
-    cd ~
-    mkdir downloads
+    mkdir ~/downloads
     cd ~/downloads
     wget http://download.osgeo.org/libspatialindex/spatialindex-src-1.8.5.tar.gz
     gunzip spatialindex-src-1.8.5.tar.gz
@@ -178,6 +179,10 @@ Find the location / section, and change it to as follow:
     sudo service nginx start
     sudo chkconfig nginx on
 
+### Enable Logs
+
+    sudo touch /var/log/uwsgi.log
+    sudo chmod 777 /var/log/uwsgi.log
 
 ### Run the routesever
 
