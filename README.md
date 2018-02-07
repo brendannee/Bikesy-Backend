@@ -44,7 +44,8 @@ If you want to use Amazon EC2 to host graphserver, here are the steps
     sudo pip install RTree
 
 ### Install osmosis
-    cd ~/downloads
+    mkdir ~/downloads/osmosis
+    cd ~/downloads/osmosis
     wget http://bretth.dev.openstreetmap.org/osmosis-build/osmosis-latest.zip
     unzip osmosis-latest.zip
     chmod a+x bin/osmosis
@@ -61,7 +62,7 @@ Download data for the US states you want
 ### Merge OSM data if needed
 If you are supporting more than one state, you'll need to merge it.
 
-    ~/downloads/bin/osmosis --rx california-latest.osm  --rx nevada-latest.osm --merge --wx california-nevada.osm
+    ~/downloads/osmosis/bin/osmosis --rx california-latest.osm  --rx nevada-latest.osm --merge --wx california-nevada.osm
 
 ### Cut down the OSM data to a bounding box
 Choose your bounding box - for example:
@@ -82,13 +83,13 @@ Lake Tahoe:
 Use Osmosis to cut out just the OSM data within your bounding box. Be sure to use the `completeWays=yes` option for `bounding-box`
 
     Bay Area:
-    ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.769606 bottom=37.459723 right=-121.611723 top=38.064476 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.769606 bottom=37.459723 right=-121.611723 top=38.064476 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
 
     The Mission:
-    ~/downloads/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.428 bottom=37.733 right=-122.4 top=37.772 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.428 bottom=37.733 right=-122.4 top=37.772 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
 
     Lake Tahoe:
-    ~/downloads/bin/osmosis --read-xml california-nevada.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt --write-xml tahoe.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml california-nevada.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt --write-xml tahoe.osm
 
 ### Make an osmdb file
     gs_osmdb_compile bayarea.osm bayarea.osmdb
@@ -215,18 +216,29 @@ or
 
 ## Create Bike facility overlays from OSM file
 
-    ~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=path,cycleway --tf accept-ways bicycle=designated --tf reject-relations --used-node --write-xml class1-1.osm
-    ~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=footway --tf accept-ways bicycle=yes --tf reject-relations --used-node --write-xml class1-2.osm
-    ~/downloads/bin/osmosis --read-xml class1-1.osm --rx class1-2.osm --merge --wx class1.osm
+### Class I
 
-    ~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=lane --tf reject-relations --used-node --write-xml class2-1.osm
-    ~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:left=lane --tf reject-relations --used-node --write-xml class2-2.osm
-    ~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:right=lane --tf reject-relations --used-node --write-xml class2-3.osm
-    ~/downloads/bin/osmosis --read-xml class2-1.osm --rx class2-2.osm --rx class2-3.osm --merge --wx class2.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=path --tf accept-ways bicycle=designated,yes --tf reject-relations --used-node --write-xml class1-1.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=cycleway --tf reject-relations --used-node --write-xml class1-2.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=footway --tf accept-ways bicycle=yes --tf reject-relations --used-node --write-xml class1-3.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml class1-1.osm --rx class1-2.osm --rx class1-3.osm --merge --merge --wx class1.osm
 
-    ~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways lcn=yes --tf reject-ways bicycle=designated --tf reject-ways highway=footway --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-1.osm
-    ~/downloads/bin/osmosis --read-xml tahoe.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=shared_lane --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-2.osm
-    ~/downloads/bin/osmosis --read-xml class3-1.osm --rx class3-2.osm --merge --wx class3.osm
+### Class II
+
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=lane --tf reject-relations --used-node --write-xml class2-1.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:left=lane --tf reject-relations --used-node --write-xml class2-2.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:right=lane --tf reject-relations --used-node --write-xml class2-3.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml class2-1.osm --rx class2-2.osm --rx class2-3.osm --merge --merge --wx class2.osm
+
+### Class III
+
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways lcn=yes --tf reject-ways bicycle=designated --tf reject-ways highway=footway --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-1.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=shared_lane --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-2.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml class3-1.osm --rx class3-2.osm --merge --wx class3.osm
+
+Convert `.osm` files to `.geojson` with QGis and only import lines.
+
+Optionally, minify the files.
 
     npm install -g simplify-geojson minify-geojson
 
