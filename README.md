@@ -83,10 +83,10 @@ Lake Tahoe:
 Use Osmosis to cut out just the OSM data within your bounding box. Be sure to use the `completeWays=yes` option for `bounding-box`
 
     Bay Area:
-    ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.769606 bottom=37.459723 right=-121.611723 top=38.064476 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.769606 bottom=37.459723 right=-121.611723 top=38.064476 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt --write-xml bayarea.osm
 
     The Mission:
-    ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.428 bottom=37.733 right=-122.4 top=37.772 completeWays=yes --tf accept-ways highway=* --write-xml bayarea.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.428 bottom=37.733 right=-122.4 top=37.772 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt --write-xml bayarea.osm
 
     Lake Tahoe:
     ~/downloads/osmosis/bin/osmosis --read-xml california-nevada.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt --write-xml tahoe.osm
@@ -95,6 +95,10 @@ Use Osmosis to cut out just the OSM data within your bounding box. Be sure to us
     gs_osmdb_compile bayarea.osm bayarea.osmdb
 
     gs_osmdb_compile tahoe.osm tahoe.osmdb
+
+or
+
+    python pygs/graphserver/ext/osm/osmdb.py bayarea.osm bayarea.osmdb
 
 ### Get DEM data from the USGS
     mkdir elevation
@@ -187,10 +191,9 @@ Find the location / section, and change it to as follow:
 
 ### Run the routesever
 
-    cd ~/bikesy-server/misc/tripplanner
-    uwsgi --yaml ./routeserver.yaml
+    cd ~/bikesy-server/misc/tripplanner && uwsgi --yaml ./routeserver.yaml
 
-To see what is going on, tail the Logs
+To see what is going on, tail the logs:
 
     tail /var/log/uwsgi.log -f
 
