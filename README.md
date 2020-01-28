@@ -221,22 +221,22 @@ or
 
 ### Class I
 
-    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=path --tf accept-ways bicycle=designated,yes --tf reject-relations --used-node --write-xml class1-1.osm
-    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=cycleway --tf reject-relations --used-node --write-xml class1-2.osm
-    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=footway --tf accept-ways bicycle=yes --tf reject-relations --used-node --write-xml class1-3.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=path --tf accept-ways bicycle=designated,yes --tf reject-relations --used-node --write-xml class1-1.osm &&
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=cycleway --tf reject-relations --used-node --write-xml class1-2.osm &&
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=footway --tf accept-ways bicycle=yes --tf reject-relations --used-node --write-xml class1-3.osm &&
     ~/downloads/osmosis/bin/osmosis --read-xml class1-1.osm --rx class1-2.osm --rx class1-3.osm --merge --merge --wx class1.osm
 
 ### Class II
 
-    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=lane --tf reject-relations --used-node --write-xml class2-1.osm
-    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:left=lane --tf reject-relations --used-node --write-xml class2-2.osm
-    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:right=lane --tf reject-relations --used-node --write-xml class2-3.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=lane --tf reject-relations --used-node --write-xml class2-1.osm &&
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:left=lane --tf reject-relations --used-node --write-xml class2-2.osm &&
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:right=lane --tf reject-relations --used-node --write-xml class2-3.osm &&
     ~/downloads/osmosis/bin/osmosis --read-xml class2-1.osm --rx class2-2.osm --rx class2-3.osm --merge --merge --wx class2.osm
 
 ### Class III
 
-    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways lcn=yes --tf reject-ways bicycle=designated --tf reject-ways highway=footway --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-1.osm
-    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=shared_lane --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-2.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways lcn=yes --tf reject-ways bicycle=designated --tf reject-ways highway=footway --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-1.osm &&
+    ~/downloads/osmosis/bin/osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=shared_lane --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-2.osm &&
     ~/downloads/osmosis/bin/osmosis --read-xml class3-1.osm --rx class3-2.osm --merge --wx class3.osm
 
 Convert `.osm` files to `.geojson` with QGis and only import lines.
