@@ -83,13 +83,13 @@ Lake Tahoe:
 Use Osmosis to cut out just the OSM data within your bounding box. Be sure to use the `completeWays=yes` option for `bounding-box`
 
     Bay Area:
-    ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.769606 bottom=37.459723 right=-121.611723 top=38.064476 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt --write-xml bayarea.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.769606 bottom=37.459723 right=-121.611723 top=38.064476 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt,grass,clay,sand,earth,pebblestone,ground,grass_paver,unpaved,woodchips,snow,ice,salt --write-xml bayarea.osm
 
     The Mission:
-    ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.428 bottom=37.733 right=-122.4 top=37.772 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt --write-xml bayarea.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.428 bottom=37.733 right=-122.4 top=37.772 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt,grass,clay,sand,earth,pebblestone,ground,grass_paver,unpaved,woodchips,snow,ice,salt --write-xml bayarea.osm
 
     Lake Tahoe:
-    ~/downloads/osmosis/bin/osmosis --read-xml california-nevada.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt --write-xml tahoe.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml california-nevada.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt,grass,clay,sand,earth,pebblestone,ground,grass_paver,unpaved,woodchips,snow,ice,salt --write-xml tahoe.osm
 
 ### Make an osmdb file
     gs_osmdb_compile bayarea.osm bayarea.osmdb
