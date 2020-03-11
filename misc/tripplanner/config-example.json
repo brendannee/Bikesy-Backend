@@ -4,6 +4,7 @@
   "scenarios": [
     {
       "id": "1",
+      "name": "direct, avoid hills",
       "edgetypes": "10",
       "ch": "50",
       "osm_weights": {
@@ -44,6 +45,7 @@
     },
     {
       "id": "2",
+      "name": "direct, neutral hills",
       "edgetypes": "25",
       "ch": "20",
       "osm_weights": {
@@ -84,6 +86,7 @@
     },
     {
       "id": "3",
+      "name": "direct, ignore hills",
       "edgetypes": "40",
       "ch": "3",
       "osm_weights": {
@@ -124,6 +127,7 @@
     },
     {
       "id": "4",
+      "name": "neutral route, avoid hills",
       "edgetypes": "10",
       "ch": "50",
       "osm_weights": {
@@ -164,6 +168,7 @@
     },
     {
       "id": "5",
+      "name": "neutral route, neutral hills",
       "edgetypes": "25",
       "ch": "20",
       "osm_weights": {
@@ -204,6 +209,7 @@
     },
     {
       "id": "6",
+      "name": "neutral route, ignore hills",
       "edgetypes": "40",
       "ch": "3",
       "osm_weights": {
@@ -244,6 +250,7 @@
     },
     {
       "id": "7",
+      "name": "safest route, avoid hills",
       "edgetypes": "10",
       "ch": "50",
       "osm_weights": {
@@ -284,6 +291,7 @@
     },
     {
       "id": "8",
+      "name": "safest route, neutral hills",
       "edgetypes": "25",
       "ch": "20",
       "osm_weights": {
@@ -324,6 +332,7 @@
     },
     {
       "id": "9",
+      "name": "safest route, ignore hills",
       "edgetypes": "40",
       "ch": "3",
       "osm_weights": {
