@@ -219,26 +219,26 @@ or
 
 ## Create Bike facility overlays from OSM file
 
-    osmosis --read-pbf bay_area.osm.pbf --tf accept-ways highway=* --tf reject-ways surface=dirt,grass,clay,sand,earth,pebblestone,ground,grass_paver,unpaved,woodchips,snow,ice,salt --write-xml bayarea.osm
+    osmosis --read-xml bayarea.osm --tf accept-ways highway=* --tf reject-ways surface=dirt,grass,clay,sand,earth,pebblestone,ground,grass_paver,unpaved,woodchips,snow,ice,salt --write-xml bikefacilities.osm
 
 ### Class I
 
-    osmosis --read-xml bayarea.osm --tf accept-ways highway=path --tf accept-ways bicycle=designated,yes --tf reject-relations --used-node --write-xml class1-1.osm &&
-    osmosis --read-xml bayarea.osm --tf accept-ways highway=cycleway --tf reject-relations --used-node --write-xml class1-2.osm &&
-    osmosis --read-xml bayarea.osm --tf accept-ways highway=footway --tf accept-ways bicycle=yes --tf reject-relations --used-node --write-xml class1-3.osm &&
+    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=path --tf accept-ways bicycle=designated,yes --tf reject-relations --used-node --write-xml class1-1.osm &&
+    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=cycleway --tf reject-relations --used-node --write-xml class1-2.osm &&
+    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=footway --tf accept-ways bicycle=designated,yes --tf reject-relations --used-node --write-xml class1-3.osm &&
     osmosis --read-xml class1-1.osm --rx class1-2.osm --rx class1-3.osm --merge --merge --wx class1.osm
 
 ### Class II
 
-    osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=lane --tf reject-relations --used-node --write-xml class2-1.osm &&
-    osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:left=lane --tf reject-relations --used-node --write-xml class2-2.osm &&
-    osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:right=lane --tf reject-relations --used-node --write-xml class2-3.osm &&
+    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=lane --tf reject-relations --used-node --write-xml class2-1.osm &&
+    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:left=lane --tf reject-relations --used-node --write-xml class2-2.osm &&
+    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:right=lane --tf reject-relations --used-node --write-xml class2-3.osm &&
     osmosis --read-xml class2-1.osm --rx class2-2.osm --rx class2-3.osm --merge --merge --wx class2.osm
 
 ### Class III
 
-    osmosis --read-xml bayarea.osm --tf accept-ways lcn=yes --tf reject-ways bicycle=designated --tf reject-ways highway=footway --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-1.osm &&
-    osmosis --read-xml bayarea.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=shared_lane --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-2.osm &&
+    osmosis --read-xml bikefacilities.osm --tf accept-ways lcn=yes --tf reject-ways bicycle=designated --tf reject-ways highway=footway --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-1.osm &&
+    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=shared_lane --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-2.osm &&
     osmosis --read-xml class3-1.osm --rx class3-2.osm --merge --wx class3.osm
 
 ## Convert `.osm` files to `.geojson`
