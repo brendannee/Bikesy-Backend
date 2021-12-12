@@ -82,6 +82,8 @@ Lake Tahoe:
 
 Use Osmosis to cut out just the OSM data within your bounding box. Be sure to use the `completeWays=yes` option for `bounding-box`
 
+For now, San Francisco has been set up to reject certain surface types, but Tahoe has been set up to accept certain surface types. Ways without a Surface tag are included in the former case but excluded in the latter case.
+
     Bay Area:
     ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.769606 bottom=37.459723 right=-121.611723 top=38.064476 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt,grass,clay,sand,earth,pebblestone,ground,grass_paver,unpaved,woodchips,snow,ice,salt --write-xml bayarea.osm
 
@@ -89,7 +91,7 @@ Use Osmosis to cut out just the OSM data within your bounding box. Be sure to us
     ~/downloads/osmosis/bin/osmosis --read-xml california-latest.osm --bounding-box left=-122.428 bottom=37.733 right=-122.4 top=37.772 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt,grass,clay,sand,earth,pebblestone,ground,grass_paver,unpaved,woodchips,snow,ice,salt --write-xml bayarea.osm
 
     Lake Tahoe:
-    ~/downloads/osmosis/bin/osmosis --read-xml california-nevada.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --tf reject-ways surface=dirt,grass,clay,sand,earth,pebblestone,ground,grass_paver,unpaved,woodchips,snow,ice,salt --write-xml tahoe.osm
+    ~/downloads/osmosis/bin/osmosis --read-xml california-nevada.osm --bounding-box left=-120.345042 bottom=38.750276 right=-119.659482 top=39.368232 completeWays=yes --tf accept-ways highway=* --tf accept-ways surface=paved,asphalt,concrete,wood --write-xml tahoe.osm
 
 ### Make an osmdb file
     gs_osmdb_compile bayarea.osm bayarea.osmdb
@@ -218,27 +220,37 @@ or
     /var/log/uwsgi.log
 
 ## Create Bike facility overlays from OSM file
+    These steps are going to depend on your region
+    Set the OSM_REGION_FILE as needed:
+    ```
+    export OSM_REGION_FILE="bayarea.osm"
+    export OSM_REGION_FILE="tahoe.osm"
+    ```
+    Also, for tahoe, change `bicycle=designated,yes` to only `bicycle=designated`. The OSM data in Tahoe has been cleaned such that all ways that we want to include on the map are tagged with `bicycle=designated.`
 
-    osmosis --read-xml bayarea.osm --tf accept-ways highway=* --tf reject-ways surface=dirt,grass,clay,sand,earth,pebblestone,ground,grass_paver,unpaved,woodchips,snow,ice,salt --write-xml bikefacilities.osm
+    ```
+    export ALLOWED_BIYCLE_TAGS="desginated,yes"
+    export ALLOWED_BIYCLE_TAGS="designated"
+
 
 ### Class I
 
-    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=path --tf accept-ways bicycle=designated,yes --tf reject-relations --used-node --write-xml class1-1.osm &&
-    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=cycleway --tf reject-relations --used-node --write-xml class1-2.osm &&
-    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=footway --tf accept-ways bicycle=designated,yes --tf reject-relations --used-node --write-xml class1-3.osm &&
+    osmosis --read-xml $OSM_REGION_FILE --tf accept-ways highway=path --tf accept-ways bicycle=$ALLOWED_BICYCLE_TAGS --tf reject-relations --used-node --write-xml class1-1.osm &&
+    osmosis --read-xml $OSM_REGION_FILE --tf accept-ways highway=cycleway --tf reject-relations --used-node --write-xml class1-2.osm &&
+    osmosis --read-xml $OSM_REGION_FILE --tf accept-ways highway=footway --tf accept-ways bicycle=$ALLOWED_BICYCLE_TAGS --tf reject-relations --used-node --write-xml class1-3.osm &&
     osmosis --read-xml class1-1.osm --rx class1-2.osm --rx class1-3.osm --merge --merge --wx class1.osm
 
 ### Class II
 
-    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=lane --tf reject-relations --used-node --write-xml class2-1.osm &&
-    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:left=lane --tf reject-relations --used-node --write-xml class2-2.osm &&
-    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:right=lane --tf reject-relations --used-node --write-xml class2-3.osm &&
+    osmosis --read-xml $OSM_REGION_FILE --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=lane --tf reject-relations --used-node --write-xml class2-1.osm &&
+    osmosis --read-xml $OSM_REGION_FILE --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:left=lane --tf reject-relations --used-node --write-xml class2-2.osm &&
+    osmosis --read-xml $OSM_REGION_FILE --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway:right=lane --tf reject-relations --used-node --write-xml class2-3.osm &&
     osmosis --read-xml class2-1.osm --rx class2-2.osm --rx class2-3.osm --merge --merge --wx class2.osm
 
 ### Class III
 
-    osmosis --read-xml bikefacilities.osm --tf accept-ways lcn=yes --tf reject-ways bicycle=designated --tf reject-ways highway=footway --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-1.osm &&
-    osmosis --read-xml bikefacilities.osm --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=shared_lane --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-2.osm &&
+    osmosis --read-xml $OSM_REGION_FILE --tf accept-ways lcn=yes --tf reject-ways bicycle=designated --tf reject-ways highway=footway --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-1.osm &&
+    osmosis --read-xml $OSM_REGION_FILE --tf accept-ways highway=residential,unclassified,tertiary,secondary,primary,trunk --tf accept-ways cycleway=shared_lane --tf reject-ways cycleway=lane --tf reject-relations --used-node --write-xml class3-2.osm &&
     osmosis --read-xml class3-1.osm --rx class3-2.osm --merge --wx class3.osm
 
 ## Convert `.osm` files to `.geojson`
