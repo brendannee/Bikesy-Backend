@@ -229,8 +229,8 @@ or
     Also, for tahoe, change `bicycle=designated,yes` to only `bicycle=designated`. The OSM data in Tahoe has been cleaned such that all ways that we want to include on the map are tagged with `bicycle=designated.`
 
     ```
-    export ALLOWED_BIYCLE_TAGS="desginated,yes"
-    export ALLOWED_BIYCLE_TAGS="designated"
+    export ALLOWED_BICYCLE_TAGS="desginated,yes"
+    export ALLOWED_BICYCLE_TAGS="designated"
 
 
 ### Class I
@@ -279,6 +279,8 @@ Simplify and minify the files:
     minify-geojson -w "name" -c 5 class2.simple.geojson &&
     cat class3.geojson | simplify-geojson -t 0.00001 > class3.simple.geojson &&
     minify-geojson -w "name" -c 5 class3.simple.geojson
+
+These files will contain extraneous point features in addition to the lines we want. Open each file in QGIS, selecting only line layers and ignoring the points. Then right click each layer and export it to a new geojson file. Save the new geojson file into the data directory so that it can be served to the frontend, with name classN.geojson.
 
 ## Credits
 Brendan Martin Anderson https://github.com/bmander wrote graphserver, the underlying system that handles the bike routing.
