@@ -280,5 +280,7 @@ Simplify and minify the files:
     cat class3.geojson | simplify-geojson -t 0.00001 > class3.simple.geojson &&
     minify-geojson -w "name" -c 5 class3.simple.geojson
 
+These files will contain extraneous point features in addition to the lines we want. Open each file in QGIS, selecting only line layers and ignoring the points. Then right click each layer and export it to a new geojson file. Save the new geojson file into the data directory so that it can be served to the frontend, with name classN.geojson.
+
 ## Credits
 Brendan Martin Anderson https://github.com/bmander wrote graphserver, the underlying system that handles the bike routing.
