@@ -229,8 +229,8 @@ or
     Also, for tahoe, change `bicycle=designated,yes` to only `bicycle=designated`. The OSM data in Tahoe has been cleaned such that all ways that we want to include on the map are tagged with `bicycle=designated.`
 
     ```
-    export ALLOWED_BIYCLE_TAGS="desginated,yes"
-    export ALLOWED_BIYCLE_TAGS="designated"
+    export ALLOWED_BICYCLE_TAGS="desginated,yes"
+    export ALLOWED_BICYCLE_TAGS="designated"
 
 
 ### Class I
